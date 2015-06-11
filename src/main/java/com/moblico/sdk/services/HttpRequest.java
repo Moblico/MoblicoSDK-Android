@@ -10,11 +10,13 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 class HttpRequest extends AsyncTask<URL, Void, String> {
 
-    static void get(final String path, final Callback<String> callback) throws MalformedURLException {
-        URL url = new URL("https://moblico.net/services/v4/authenticate?apikey=e44ed355-9d91-4db2-9aba-7ffd52d1dac2&platformName=ANDROID");
+    static void get(final String path, final Map<String, String> params, final Callback<String> callback) throws MalformedURLException {
+        final URL url = Moblico.buildUrl(path, params);
         new HttpRequest(url, callback);
     }
 

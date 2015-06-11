@@ -11,6 +11,8 @@ import com.moblico.sdk.entities.AuthenticationToken;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class AuthenticationService {
 
@@ -27,8 +29,12 @@ public final class AuthenticationService {
             callback.onSuccess(null);
         }
 
+        final Map<String, String> params = new HashMap<String, String>();
+        params.put("apikey", Moblico.getApiKey());
+        params.put("PlatformName", "ANDROID");
+
         try {
-            HttpRequest.get("", new Callback<String>() {
+            HttpRequest.get("authenticate", params, new Callback<String>() {
                 @Override
                 public void onSuccess(String result) {
                     GsonBuilder builder = new GsonBuilder();
