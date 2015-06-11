@@ -12,6 +12,7 @@ public final class Moblico {
 
     private static String sApiKey;
     private static AuthenticationToken sToken;
+    private static boolean sLogging;
 
     private Moblico() {
     }
@@ -51,4 +52,11 @@ public final class Moblico {
         return sToken;
     }
 
+    public static boolean isLogging() {
+        return sLogging;
+    }
+
+    public static void setLogging(final boolean logging) {
+        sLogging = logging;
+    }
 }
