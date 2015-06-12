@@ -23,6 +23,7 @@ class HttpRequest extends AsyncTask<URL, Void, String> {
     }
 
     private final Callback<String> mCallback;
+    private Throwable mThrowable;
 
     private HttpRequest(final URL url, final Callback<String> callback) {
         mCallback = callback;
@@ -36,7 +37,8 @@ class HttpRequest extends AsyncTask<URL, Void, String> {
         Reader in = new InputStreamReader(stream, "UTF-8");
         while (true) {
             int size = in.read(buffer, 0, buffer.length);
-            if(size < 0) {
+            // TODO: more support for cancelling requests.
+            if(size < 0 || isCancelled()) {
                 break;
             }
             out.append(buffer, 0, size);
@@ -54,10 +56,23 @@ class HttpRequest extends AsyncTask<URL, Void, String> {
         try {
             urlConnection = (HttpURLConnection)url.openConnection();
         } catch (IOException e) {
-            e.printStackTrace();
+            mThrowable = e;
+            return null;
         }
         try {
-            // check response code.
+            final int responseCode = urlConnection.getResponseCode();
+            if (responseCode != 200) {
+                if (Moblico.isLogging()) {
+                    Log.e(TAG, "Got failed response code: " + responseCode);
+                }
+                InputStream stream = urlConnection.getErrorStream();
+                String string = fromStream(stream);
+                if (Moblico.isLogging()) {
+                    Log.e(TAG, "Failure message: " + string);
+                }
+                mThrowable = new StatusCodeException(string);
+                return null;
+            }
             InputStream stream = urlConnection.getInputStream();
             String string = fromStream(stream);
             if (Moblico.isLogging()) {
@@ -65,7 +80,7 @@ class HttpRequest extends AsyncTask<URL, Void, String> {
             }
             return string;
         } catch (IOException e) {
-            e.printStackTrace();
+            mThrowable = e;
         } finally {
             urlConnection.disconnect();
         }
@@ -74,6 +89,12 @@ class HttpRequest extends AsyncTask<URL, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        mCallback.onSuccess(result);
+        if (result != null) {
+            mCallback.onSuccess(result);
+        } else if (mThrowable != null) {
+            mCallback.onFailure(mThrowable);
+        } else {
+            mCallback.onFailure(new RuntimeException("Connection finished with no result or exception."));
+        }
     }
 }
