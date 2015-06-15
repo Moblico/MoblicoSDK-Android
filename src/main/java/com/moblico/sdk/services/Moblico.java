@@ -1,5 +1,6 @@
 package com.moblico.sdk.services;
 
+import android.content.Context;
 import android.net.Uri;
 
 import com.moblico.sdk.entities.AuthenticationToken;
@@ -12,6 +13,7 @@ public final class Moblico {
 
     private static String sApiKey;
     private static AuthenticationToken sToken;
+    private static Settings sSettings;
     private static boolean sLogging;
 
     private Moblico() {
@@ -40,12 +42,20 @@ public final class Moblico {
         return sApiKey;
     }
 
-    public static void setApiKey(final String apiKey) {
+    public static void setApiKey(final String apiKey, final Context context) {
         sApiKey = apiKey;
+        sSettings = new Settings(context);
     }
 
     public static AuthenticationService getAuthenticationService() {
         return new AuthenticationService();
+    }
+
+    public static Settings getSettings() {
+        if(sSettings == null) {
+            throw new IllegalStateException("Cannot get settings until setApiKey() has been called.");
+        }
+        return sSettings;
     }
 
     public static AuthenticationToken getToken() {
