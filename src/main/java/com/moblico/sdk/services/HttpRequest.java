@@ -17,9 +17,13 @@ import java.util.Map;
 class HttpRequest extends AsyncTask<URL, Void, String> {
     private static final String TAG = HttpRequest.class.getName();
 
-    static void get(final String path, final Map<String, String> params, final Callback<String> callback) throws MalformedURLException {
-        final URL url = Moblico.buildUrl(path, params);
-        new HttpRequest(url, callback);
+    static void get(final String path, final Map<String, String> params, final Callback<String> callback) {
+        try {
+            final URL url = Moblico.buildUrl(path, params);
+            new HttpRequest(url, callback);
+        } catch (MalformedURLException e) {
+            callback.onFailure(e);
+        }
     }
 
     private final Callback<String> mCallback;
