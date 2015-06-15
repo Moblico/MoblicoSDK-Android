@@ -31,10 +31,14 @@ public final class Moblico {
                 b.appendQueryParameter(key, params.get(key));
             }
         }
+        if(sToken != null && sToken.isValid()) {
+            b.appendQueryParameter("token", sToken.getToken());
+        }
         return new URL(b.build().toString());
     }
 
     static void setToken(final AuthenticationToken token) {
+        // TODO: persist this?
         Moblico.sToken = token;
     }
 
@@ -49,6 +53,10 @@ public final class Moblico {
 
     public static AuthenticationService getAuthenticationService() {
         return new AuthenticationService();
+    }
+
+    public static SettingsService getSettingsService() {
+        return new SettingsService();
     }
 
     public static Settings getSettings() {
