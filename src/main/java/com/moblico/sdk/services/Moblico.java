@@ -1,6 +1,7 @@
 package com.moblico.sdk.services;
 
 import android.content.Context;
+import android.location.Location;
 import android.net.Uri;
 
 import com.moblico.sdk.entities.AuthenticationToken;
@@ -53,6 +54,10 @@ public final class Moblico {
 
     public static AuthenticationService getAuthenticationService() {
         return new AuthenticationService();
+    }
+
+    public static LocationsService getLocationsService() {
+        return new LocationsService();
     }
 
     public static SettingsService getSettingsService() {
