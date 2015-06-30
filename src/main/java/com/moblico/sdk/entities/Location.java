@@ -1,9 +1,13 @@
 package com.moblico.sdk.entities;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
-public class Location {
+public class Location implements Parcelable {
     private final long id;
     private final Date createDate;
     private final Date lastUpdateDate;
@@ -36,47 +40,105 @@ public class Location {
     private final int checkinRadius;
     private final Map<String, String> attributes;
 
-    private Location(final long id, final Date createDate, final Date lastUpdateDate, final String type,
-                     final boolean active, final long merchantId, final String name, final String description,
-                     final String address1, final String address2, final String city, final String county,
-                     final String stateOrProvince, final String phone, final String email, final String postalCode,
-                     final String country, final double latitude, final double longitude, final double distance,
-                     final String url, final String contactName, final String externalId, final String locale,
-                     final boolean geoNotificationEnabled, final boolean geoEnterNotificationEnabled,
-                     final int geoFenceRadius, final String geoEnterNotificationText,
-                     final boolean checkinEnabled, final int checkinRadius, final Map<String, String> attributes) {
-        this.id = id;
-        this.createDate = createDate;
-        this.lastUpdateDate = lastUpdateDate;
-        this.type = type;
-        this.active = active;
-        this.merchantId = merchantId;
-        this.name = name;
-        this.description = description;
-        this.address1 = address1;
-        this.address2 = address2;
-        this.city = city;
-        this.county = county;
-        this.stateOrProvince = stateOrProvince;
-        this.phone = phone;
-        this.email = email;
-        this.postalCode = postalCode;
-        this.country = country;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.distance = distance;
-        this.url = url;
-        this.contactName = contactName;
-        this.externalId = externalId;
-        this.locale = locale;
-        this.geoNotificationEnabled = geoNotificationEnabled;
-        this.geoEnterNotificationEnabled = geoEnterNotificationEnabled;
-        this.geoFenceRadius = geoFenceRadius;
-        this.geoEnterNotificationText = geoEnterNotificationText;
-        this.checkinEnabled = checkinEnabled;
-        this.checkinRadius = checkinRadius;
-        this.attributes = attributes;
+    protected Location(Parcel in) {
+        id = in.readLong();
+        long tmpCreateDate = in.readLong();
+        createDate = tmpCreateDate != -1 ? new Date(tmpCreateDate) : null;
+        long tmpLastUpdateDate = in.readLong();
+        lastUpdateDate = tmpLastUpdateDate != -1 ? new Date(tmpLastUpdateDate) : null;
+        type = in.readString();
+        active = in.readByte() != 0x00;
+        merchantId = in.readLong();
+        name = in.readString();
+        description = in.readString();
+        address1 = in.readString();
+        address2 = in.readString();
+        city = in.readString();
+        county = in.readString();
+        stateOrProvince = in.readString();
+        phone = in.readString();
+        email = in.readString();
+        postalCode = in.readString();
+        country = in.readString();
+        latitude = in.readDouble();
+        longitude = in.readDouble();
+        distance = in.readDouble();
+        url = in.readString();
+        contactName = in.readString();
+        externalId = in.readString();
+        locale = in.readString();
+        geoNotificationEnabled = in.readByte() != 0x00;
+        geoEnterNotificationEnabled = in.readByte() != 0x00;
+        geoFenceRadius = in.readInt();
+        geoEnterNotificationText = in.readString();
+        checkinEnabled = in.readByte() != 0x00;
+        checkinRadius = in.readInt();
+        // TODO: move this pattern to a base class if it is used much
+        int size = in.readInt();
+        attributes = new HashMap<String, String>(size);
+        for(int i = 0; i < size; i++){
+            String key = in.readString();
+            String value = in.readString();
+            attributes.put(key,value);
+        }
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeLong(createDate != null ? createDate.getTime() : -1L);
+        dest.writeLong(lastUpdateDate != null ? lastUpdateDate.getTime() : -1L);
+        dest.writeString(type);
+        dest.writeByte((byte) (active ? 0x01 : 0x00));
+        dest.writeLong(merchantId);
+        dest.writeString(name);
+        dest.writeString(description);
+        dest.writeString(address1);
+        dest.writeString(address2);
+        dest.writeString(city);
+        dest.writeString(county);
+        dest.writeString(stateOrProvince);
+        dest.writeString(phone);
+        dest.writeString(email);
+        dest.writeString(postalCode);
+        dest.writeString(country);
+        dest.writeDouble(latitude);
+        dest.writeDouble(longitude);
+        dest.writeDouble(distance);
+        dest.writeString(url);
+        dest.writeString(contactName);
+        dest.writeString(externalId);
+        dest.writeString(locale);
+        dest.writeByte((byte) (geoNotificationEnabled ? 0x01 : 0x00));
+        dest.writeByte((byte) (geoEnterNotificationEnabled ? 0x01 : 0x00));
+        dest.writeInt(geoFenceRadius);
+        dest.writeString(geoEnterNotificationText);
+        dest.writeByte((byte) (checkinEnabled ? 0x01 : 0x00));
+        dest.writeInt(checkinRadius);
+        dest.writeInt(attributes.size());
+        for(Map.Entry<String,String> entry : attributes.entrySet()){
+            dest.writeString(entry.getKey());
+            dest.writeString(entry.getValue());
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Location> CREATOR = new Parcelable.Creator<Location>() {
+        @Override
+        public Location createFromParcel(Parcel in) {
+            return new Location(in);
+        }
+
+        @Override
+        public Location[] newArray(int size) {
+            return new Location[size];
+        }
+    };
 
     public long getId() {
         return id;
