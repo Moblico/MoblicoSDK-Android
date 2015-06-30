@@ -16,6 +16,7 @@ public final class Moblico {
     private static AuthenticationToken sToken;
     private static Settings sSettings;
     private static boolean sLogging;
+    private static boolean sTesting;
 
     private Moblico() {
     }
@@ -23,7 +24,11 @@ public final class Moblico {
     static URL buildUrl(final String path, Map<String, String> params) throws MalformedURLException {
         Uri.Builder b = new Uri.Builder();
         b.scheme("https");
-        b.authority("moblico.net");
+        if(sTesting) {
+            b.authority("moblicosandbox.com");
+        } else {
+            b.authority("moblico.net");
+        }
         b.appendPath("services");
         b.appendPath("v4");
         b.appendPath(path);
@@ -81,5 +86,9 @@ public final class Moblico {
 
     public static void setLogging(final boolean logging) {
         sLogging = logging;
+    }
+
+    public static void setTesting(boolean testing) {
+        sTesting = testing;
     }
 }
