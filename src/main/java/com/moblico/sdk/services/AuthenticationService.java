@@ -28,6 +28,7 @@ public final class AuthenticationService {
     public void authenticate(final Callback<Void> callback) {
         if (Moblico.getToken() != null && Moblico.getToken().isValid()) {
             callback.onSuccess(null);
+            return;
         }
 
         final Map<String, String> params = new HashMap<String, String>();
