@@ -1,5 +1,7 @@
 package com.moblico.sdk.services;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -8,22 +10,30 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.moblico.sdk.entities.Location;
+import com.moblico.sdk.entities.Media;
 
 import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public final class LocationsService {
+public class MediaService {
 
-    LocationsService() {
+    private MediaService() {
     }
 
-    public void findLocations(final Callback<List<Location>> callback) {
+    public static void findAll(final String category, final String mediaType, final String mediaTypeCategory, final Callback<List<Media>> callback) {
+        final Map<String, String> params = new HashMap<String, String>();
+        if(category != null) params.put("category", category);
+        if(mediaType != null) params.put("mediaType", mediaType);
+        if(mediaTypeCategory != null) params.put("mediaTypeCategory", mediaTypeCategory);
+
         Moblico.getAuthenticationService().authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
-                // TODO: pass in current location, if known?
-                HttpRequest.get("locations", null, new Callback<String>() {
+                HttpRequest.get("media", params, new Callback<String>() {
+
                     @Override
                     public void onSuccess(String result) {
                         GsonBuilder builder = new GsonBuilder();
@@ -35,8 +45,8 @@ public final class LocationsService {
                             }
                         });
                         final Gson gson = builder.create();
-                        Type collectionType = new TypeToken<List<Location>>() { }.getType();
-                        List<Location> locations = gson.fromJson(result, collectionType);
+                        Type collectionType = new TypeToken<List<Media>>() { }.getType();
+                        List<Media> locations = gson.fromJson(result, collectionType);
                         callback.onSuccess(locations);
                     }
 
@@ -46,7 +56,6 @@ public final class LocationsService {
                     }
                 });
             }
-        });
-
+        } );
     }
 }

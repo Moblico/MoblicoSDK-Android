@@ -74,7 +74,7 @@ public class Location implements Parcelable {
         checkinEnabled = in.readByte() != 0x00;
         checkinRadius = in.readInt();
         // TODO: move this pattern to a base class if it is used much
-        int size = in.readInt();
+        final int size = in.readInt();
         attributes = new HashMap<String, String>(size);
         for(int i = 0; i < size; i++){
             String key = in.readString();
