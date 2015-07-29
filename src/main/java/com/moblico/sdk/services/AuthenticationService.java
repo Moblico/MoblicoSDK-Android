@@ -33,7 +33,14 @@ public final class AuthenticationService {
 
         final Map<String, String> params = new HashMap<String, String>();
         params.put("apikey", Moblico.getApiKey());
-        params.put("PlatformName", "ANDROID");
+        params.put("platformName", "ANDROID");
+        if (Moblico.getUsername() != null) {
+            params.put("username", Moblico.getUsername());
+            params.put("password", Moblico.getPassword());
+            if (Moblico.getClientCode() != null) {
+                params.put("childKeyword", Moblico.getClientCode());
+            }
+        }
 
         HttpRequest.get("authenticate", params, new Callback<String>() {
             @Override

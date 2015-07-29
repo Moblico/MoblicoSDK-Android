@@ -1,7 +1,6 @@
 package com.moblico.sdk.services;
 
 import android.content.Context;
-import android.location.Location;
 import android.net.Uri;
 
 import com.moblico.sdk.entities.AuthenticationToken;
@@ -17,6 +16,9 @@ public final class Moblico {
     private static Settings sSettings;
     private static boolean sLogging;
     private static boolean sTesting;
+    private static String sUsername;
+    private static String sPassword;
+    private static String sClientCode;
 
     private Moblico() {
     }
@@ -31,7 +33,7 @@ public final class Moblico {
         }
         b.appendPath("services");
         b.appendPath("v4");
-        b.appendPath(path);
+        b.appendEncodedPath(path);
         if(params != null) {
             for(String key : params.keySet()) {
                 b.appendQueryParameter(key, params.get(key));
@@ -90,5 +92,28 @@ public final class Moblico {
 
     public static void setTesting(boolean testing) {
         sTesting = testing;
+    }
+
+    public static void setUser(final String username, final String password) {
+        sUsername = username;
+        sPassword = password;
+        sToken = null;
+    }
+
+    public static void setClientCode(final String clientCode) {
+        sClientCode = clientCode;
+        sToken = null;
+    }
+
+    public static String getUsername() {
+        return sUsername;
+    }
+
+    public static String getPassword() {
+        return sPassword;
+    }
+
+    public static String getClientCode() {
+        return sClientCode;
     }
 }
