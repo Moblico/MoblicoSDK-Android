@@ -32,7 +32,7 @@ public class MediaService {
         Moblico.getAuthenticationService().authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
-                HttpRequest.get("media", params, new Callback<String>() {
+                HttpRequest.get("media", params, new ErrorForwardingCallback<String>(callback) {
 
                     @Override
                     public void onSuccess(String result) {
@@ -46,13 +46,8 @@ public class MediaService {
                         });
                         final Gson gson = builder.create();
                         Type collectionType = new TypeToken<List<Media>>() { }.getType();
-                        List<Media> locations = gson.fromJson(result, collectionType);
-                        callback.onSuccess(locations);
-                    }
-
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        callback.onFailure(caught);
+                        List<Media> media = gson.fromJson(result, collectionType);
+                        callback.onSuccess(media);
                     }
                 });
             }
