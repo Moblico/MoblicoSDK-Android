@@ -18,6 +18,11 @@ public class StatusCodeException extends IOException {
         mStatusCode = status.getHttpStatus();
     }
 
+    public StatusCodeException(final int statusCode) {
+        super(Integer.toString(statusCode));
+        mStatusCode = statusCode;
+    }
+
     public int getStatusCode() {
         return mStatusCode;
     }

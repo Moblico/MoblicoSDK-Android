@@ -74,7 +74,11 @@ class HttpRequest extends AsyncTask<URL, Void, String> {
                 if (Moblico.isLogging()) {
                     Log.e(TAG, "Failure message: " + string);
                 }
-                mThrowable = new StatusCodeException(string);
+                try {
+                    mThrowable = new StatusCodeException(string);
+                } catch (Exception e) {
+                    mThrowable = new StatusCodeException(responseCode);
+                }
                 return null;
             }
             InputStream stream = urlConnection.getInputStream();
