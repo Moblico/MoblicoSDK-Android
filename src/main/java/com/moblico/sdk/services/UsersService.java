@@ -22,7 +22,7 @@ public class UsersService {
     }
 
     public static void getUser(final String username, final Callback<User> callback) {
-        Moblico.getAuthenticationService().authenticate(new ErrorForwardingCallback<Void>(callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
                 HttpRequest.get("users/" + username, null, new ErrorForwardingCallback<String>(callback) {
@@ -43,6 +43,6 @@ public class UsersService {
                     }
                 });
             }
-        } );
+        });
     }
 }

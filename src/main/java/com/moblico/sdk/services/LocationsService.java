@@ -15,15 +15,15 @@ import java.util.List;
 
 public final class LocationsService {
 
-    LocationsService() {
+    private LocationsService() {
     }
 
-    public void findLocations(final Callback<List<Location>> callback) {
-        Moblico.getAuthenticationService().authenticate(new ErrorForwardingCallback<Void>(callback) {
+    public static void findLocations(final Callback<List<Location>> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
                 // TODO: pass in current location, if known?
-                HttpRequest.get("locations", null, new Callback<String>() {
+                HttpRequest.get("locations", null, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
                         GsonBuilder builder = new GsonBuilder();
@@ -35,14 +35,9 @@ public final class LocationsService {
                             }
                         });
                         final Gson gson = builder.create();
-                        Type collectionType = new TypeToken<List<Location>>() { }.getType();
+                        Type collectionType = new TypeToken<List<Location>>() {}.getType();
                         List<Location> locations = gson.fromJson(result, collectionType);
                         callback.onSuccess(locations);
-                    }
-
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        callback.onFailure(caught);
                     }
                 });
             }

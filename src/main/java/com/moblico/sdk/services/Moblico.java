@@ -1,6 +1,7 @@
 package com.moblico.sdk.services;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 
 import com.moblico.sdk.entities.AuthenticationToken;
@@ -11,6 +12,10 @@ import java.util.Map;
 
 public final class Moblico {
 
+    private static final String USERNAME_KEY = "MOBLICO_LOGIN_USERNAME";
+    private static final String PASSWORD_KEY = "MOBLICO_LOGIN_PASSWORD";
+    private static final String CLIENT_CODE_KEY = "MOBLICO_LOGIN_CLIENT_CODE";
+
     private static String sApiKey;
     private static AuthenticationToken sToken;
     private static Settings sSettings;
@@ -19,6 +24,7 @@ public final class Moblico {
     private static String sUsername;
     private static String sPassword;
     private static String sClientCode;
+    private static SharedPreferences sSharedPrefs;
 
     private Moblico() {
     }
@@ -57,18 +63,7 @@ public final class Moblico {
     public static void setApiKey(final String apiKey, final Context context) {
         sApiKey = apiKey;
         sSettings = new Settings(context);
-    }
-
-    public static AuthenticationService getAuthenticationService() {
-        return new AuthenticationService();
-    }
-
-    public static LocationsService getLocationsService() {
-        return new LocationsService();
-    }
-
-    public static SettingsService getSettingsService() {
-        return new SettingsService();
+        sSharedPrefs = context.getSharedPreferences("MOBLICO_LOGIN", Context.MODE_PRIVATE);
     }
 
     public static Settings getSettings() {
@@ -94,26 +89,50 @@ public final class Moblico {
         sTesting = testing;
     }
 
-    public static void setUser(final String username, final String password) {
+    public static void setUser(final String username, final String password, final boolean persist) {
         sUsername = username;
         sPassword = password;
+        if (persist) {
+            SharedPreferences.Editor edit = sSharedPrefs.edit();
+            edit.putString(USERNAME_KEY, username);
+            edit.putString(PASSWORD_KEY, password);
+            edit.apply();
+        } else {
+            SharedPreferences.Editor edit = sSharedPrefs.edit();
+            edit.clear();
+            edit.apply();
+        }
         sToken = null;
     }
 
     public static void setClientCode(final String clientCode) {
         sClientCode = clientCode;
+        if(sSharedPrefs.contains(USERNAME_KEY)) {
+            SharedPreferences.Editor edit = sSharedPrefs.edit();
+            edit.putString(CLIENT_CODE_KEY, clientCode);
+            edit.apply();
+        }
         sToken = null;
     }
 
     public static String getUsername() {
+        if(sUsername == null) {
+            sUsername = sSharedPrefs.getString(USERNAME_KEY, null);
+        }
         return sUsername;
     }
 
     public static String getPassword() {
+        if(sPassword == null) {
+            sPassword = sSharedPrefs.getString(PASSWORD_KEY, null);
+        }
         return sPassword;
     }
 
     public static String getClientCode() {
+        if(sClientCode == null) {
+            sClientCode = sSharedPrefs.getString(CLIENT_CODE_KEY, null);
+        }
         return sClientCode;
     }
 }

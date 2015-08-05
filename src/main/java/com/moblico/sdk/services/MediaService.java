@@ -29,7 +29,7 @@ public class MediaService {
         if(mediaType != null) params.put("mediaType", mediaType);
         if(mediaTypeCategory != null) params.put("mediaTypeCategory", mediaTypeCategory);
 
-        Moblico.getAuthenticationService().authenticate(new ErrorForwardingCallback<Void>(callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
                 HttpRequest.get("media", params, new ErrorForwardingCallback<String>(callback) {

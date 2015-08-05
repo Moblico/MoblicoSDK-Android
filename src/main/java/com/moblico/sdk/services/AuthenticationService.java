@@ -16,7 +16,7 @@ import java.util.Map;
 
 public final class AuthenticationService {
 
-    AuthenticationService() {
+    private AuthenticationService() {
     }
 
     /**
@@ -25,7 +25,7 @@ public final class AuthenticationService {
      * request and eventually notify the callback.  The authentication token is cached internally,
      * so no extra information is sent to the callback, just a call to onSuccess or onFailure.
      */
-    public void authenticate(final Callback<Void> callback) {
+    public static void authenticate(final Callback<Void> callback) {
         if (Moblico.getToken() != null && Moblico.getToken().isValid()) {
             callback.onSuccess(null);
             return;
