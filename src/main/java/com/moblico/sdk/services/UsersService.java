@@ -1,19 +1,9 @@
 package com.moblico.sdk.services;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.reflect.TypeToken;
-import com.moblico.sdk.entities.Media;
 import com.moblico.sdk.entities.User;
 
-import java.lang.reflect.Type;
-import java.util.Date;
+import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class UsersService {
@@ -29,16 +19,7 @@ public class UsersService {
 
                     @Override
                     public void onSuccess(String result) {
-                        GsonBuilder builder = new GsonBuilder();
-                        // Register an adapter to manage the date types as long values
-                        // TODO: centralize this.
-                        final GsonBuilder gsonBuilder = builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-                            public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                                return new Date(json.getAsJsonPrimitive().getAsLong());
-                            }
-                        });
-                        final Gson gson = builder.create();
-                        User user = gson.fromJson(result, User.class);
+                        User user = Moblico.getGson().fromJson(result, User.class);
                         callback.onSuccess(user);
                     }
                 });

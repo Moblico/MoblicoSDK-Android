@@ -4,10 +4,18 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.moblico.sdk.entities.AuthenticationToken;
 
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 import java.util.Map;
 
 public final class Moblico {
@@ -25,6 +33,22 @@ public final class Moblico {
     private static String sPassword;
     private static String sClientCode;
     private static SharedPreferences sSharedPrefs;
+    private static Gson sGson;
+
+    static {
+        GsonBuilder builder = new GsonBuilder();
+        // Register an adapter to manage the date types as long values
+        final GsonBuilder gsonBuilder = builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+            public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                try {
+                    return new Date(json.getAsJsonPrimitive().getAsLong());
+                } catch(Exception e) {
+                    return null;
+                }
+            }
+        });
+        sGson = builder.create();
+    }
 
     private Moblico() {
     }
@@ -71,6 +95,10 @@ public final class Moblico {
             throw new IllegalStateException("Cannot get settings until setApiKey() has been called.");
         }
         return sSettings;
+    }
+
+    public static Gson getGson() {
+        return sGson;
     }
 
     public static AuthenticationToken getToken() {

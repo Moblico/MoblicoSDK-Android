@@ -1,16 +1,7 @@
 package com.moblico.sdk.services;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.moblico.sdk.entities.AuthenticationToken;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,15 +36,7 @@ public final class AuthenticationService {
         HttpRequest.get("authenticate", params, new Callback<String>() {
             @Override
             public void onSuccess(String result) {
-                GsonBuilder builder = new GsonBuilder();
-                // Register an adapter to manage the date types as long values
-                final GsonBuilder gsonBuilder = builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-                    public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                        return new Date(json.getAsJsonPrimitive().getAsLong());
-                    }
-                });
-                final Gson gson = builder.create();
-                final AuthenticationToken token = gson.fromJson(result, AuthenticationToken.class);
+                final AuthenticationToken token = Moblico.getGson().fromJson(result, AuthenticationToken.class);
                 Moblico.setToken(token);
                 callback.onSuccess(null);
             }
