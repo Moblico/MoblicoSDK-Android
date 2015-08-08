@@ -25,6 +25,7 @@ public class User implements Parcelable {
     }
 
     private final String username;
+    private final String password;
     private final boolean optinEmail;
     private final boolean optinPhone;
     private final String phone;
@@ -40,15 +41,46 @@ public class User implements Parcelable {
     private final String country;
     private final String postalCode;
     private final String dateOfBirth;
-    private final int age;
+    private final String age;
     private final Date createDate;
     private final Date lastUpdateDate;
     private final ContactPreferenceType contactPreference;
     private final GenderType gender;
     private final Map<String, String> attributes;
 
+    public User(String username, String password, String phone, String email, String nickName,
+                String locale, String firstName, String lastName, String address1, String address2,
+                String city, String stateOrProvince, String country, String postalCode,
+                String dateOfBirth, String age, boolean optinEmail, boolean optinPhone,
+                ContactPreferenceType contactPreference, GenderType gender) {
+        this.username = username;
+        this.password = password;
+        this.phone = phone;
+        this.email = email;
+        this.nickName = nickName;
+        this.locale = locale;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address1 = address1;
+        this.address2 = address2;
+        this.city = city;
+        this.stateOrProvince = stateOrProvince;
+        this.country = country;
+        this.postalCode = postalCode;
+        this.dateOfBirth = dateOfBirth;
+        this.age = age;
+        this.optinEmail = optinEmail;
+        this.optinPhone = optinPhone;
+        this.contactPreference = contactPreference;
+        this.gender = gender;
+        this.createDate = null;
+        this.lastUpdateDate = null;
+        this.attributes = new HashMap<>();
+    }
+
     protected User(Parcel in) {
         username = in.readString();
+        password = in.readString();
         optinEmail = in.readByte() != 0x00;
         optinPhone = in.readByte() != 0x00;
         phone = in.readString();
@@ -64,7 +96,7 @@ public class User implements Parcelable {
         country = in.readString();
         postalCode = in.readString();
         dateOfBirth = in.readString();
-        age = in.readInt();
+        age = in.readString();
         long tmpCreateDate = in.readLong();
         createDate = tmpCreateDate != -1 ? new Date(tmpCreateDate) : null;
         long tmpLastUpdateDate = in.readLong();
@@ -89,6 +121,7 @@ public class User implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(username);
+        dest.writeString(password);
         dest.writeByte((byte) (optinEmail ? 0x01 : 0x00));
         dest.writeByte((byte) (optinPhone ? 0x01 : 0x00));
         dest.writeString(phone);
@@ -104,7 +137,7 @@ public class User implements Parcelable {
         dest.writeString(country);
         dest.writeString(postalCode);
         dest.writeString(dateOfBirth);
-        dest.writeInt(age);
+        dest.writeString(age);
         dest.writeLong(createDate != null ? createDate.getTime() : -1L);
         dest.writeLong(lastUpdateDate != null ? lastUpdateDate.getTime() : -1L);
         dest.writeValue(contactPreference);
@@ -195,7 +228,7 @@ public class User implements Parcelable {
         return dateOfBirth;
     }
 
-    public int getAge() {
+    public String getAge() {
         return age;
     }
 
