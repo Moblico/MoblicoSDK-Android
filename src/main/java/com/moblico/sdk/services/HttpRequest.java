@@ -20,17 +20,28 @@ class HttpRequest extends AsyncTask<URL, Void, String> {
     static void get(final String path, final Map<String, String> params, final Callback<String> callback) {
         try {
             final URL url = Moblico.buildUrl(path, params);
-            new HttpRequest(url, callback);
+            new HttpRequest(url, "GET", callback);
+        } catch (MalformedURLException e) {
+            callback.onFailure(e);
+        }
+    }
+
+    static void post(final String path, final Map<String, String> params, final Callback<String> callback) {
+        try {
+            final URL url = Moblico.buildUrl(path, params);
+            new HttpRequest(url, "POST", callback);
         } catch (MalformedURLException e) {
             callback.onFailure(e);
         }
     }
 
     private final Callback<String> mCallback;
+    private final String mRequestMethod;
     private Throwable mThrowable;
 
-    private HttpRequest(final URL url, final Callback<String> callback) {
+    private HttpRequest(final URL url, final String requestMethod, final Callback<String> callback) {
         mCallback = callback;
+        mRequestMethod = requestMethod;
         execute(url);
     }
 
@@ -54,11 +65,12 @@ class HttpRequest extends AsyncTask<URL, Void, String> {
     protected String doInBackground(URL... params) {
         URL url = params[0];
         if(Moblico.isLogging()) {
-            Log.i(TAG, "Sending GET to " + url.toString());
+            Log.i(TAG, "Sending " + mRequestMethod + " to " + url.toString());
         }
         HttpURLConnection urlConnection = null;
         try {
             urlConnection = (HttpURLConnection)url.openConnection();
+            urlConnection.setRequestMethod(mRequestMethod);
         } catch (IOException e) {
             mThrowable = e;
             return null;
