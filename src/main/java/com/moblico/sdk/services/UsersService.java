@@ -1,5 +1,7 @@
 package com.moblico.sdk.services;
 
+import android.content.Context;
+
 import com.moblico.sdk.entities.User;
 
 import java.lang.reflect.Field;
@@ -61,5 +63,9 @@ public class UsersService {
                 });
             }
         });
+    }
+
+    public static String getUniqueUserId(final Context context) {
+        return "Anonymous." + InstallationID.id(context);
     }
 }
