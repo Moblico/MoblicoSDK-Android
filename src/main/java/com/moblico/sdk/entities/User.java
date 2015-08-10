@@ -13,7 +13,9 @@ public class User implements Parcelable {
     public static enum GenderType {
         @SerializedName("")
         UNDECLARED,
+        @SerializedName("Male")
         MALE,
+        @SerializedName("Female")
         FEMALE
     }
 
