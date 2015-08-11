@@ -35,6 +35,15 @@ class HttpRequest extends AsyncTask<URL, Void, String> {
         }
     }
 
+    static void put(final String path, final Map<String, String> params, final Callback<String> callback) {
+        try {
+            final URL url = Moblico.buildUrl(path, params);
+            new HttpRequest(url, "PUT", callback);
+        } catch (MalformedURLException e) {
+            callback.onFailure(e);
+        }
+    }
+
     private final Callback<String> mCallback;
     private final String mRequestMethod;
     private Throwable mThrowable;
