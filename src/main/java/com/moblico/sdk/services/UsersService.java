@@ -50,6 +50,12 @@ public class UsersService {
             @Override
             public void onSuccess(Void result) {
                 Map<String, String> params = getUserParams(user);
+                // It never makes sense to send the username parameter.  If the username has changed,
+                // we use the 'newUsername' parameter.
+                params.remove("username");
+                if (!username.equals(user.getUsername())) {
+                    params.put("newUsername", user.getUsername());
+                }
                 HttpRequest.put("users/" + username, params, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
