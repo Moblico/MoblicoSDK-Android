@@ -14,10 +14,10 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-class HttpRequest extends AsyncTask<URL, Void, String> {
+public class HttpRequest extends AsyncTask<URL, Void, String> {
     private static final String TAG = HttpRequest.class.getName();
 
-    static void get(final String path, final Map<String, String> params, final Callback<String> callback) {
+    static public void get(final String path, final Map<String, String> params, final Callback<String> callback) {
         try {
             final URL url = Moblico.buildUrl(path, params);
             new HttpRequest(url, "GET", callback);
@@ -26,7 +26,7 @@ class HttpRequest extends AsyncTask<URL, Void, String> {
         }
     }
 
-    static void post(final String path, final Map<String, String> params, final Callback<String> callback) {
+    static public void post(final String path, final Map<String, String> params, final Callback<String> callback) {
         try {
             final URL url = Moblico.buildUrl(path, params);
             new HttpRequest(url, "POST", callback);
@@ -35,7 +35,7 @@ class HttpRequest extends AsyncTask<URL, Void, String> {
         }
     }
 
-    static void put(final String path, final Map<String, String> params, final Callback<String> callback) {
+    static public void put(final String path, final Map<String, String> params, final Callback<String> callback) {
         try {
             final URL url = Moblico.buildUrl(path, params);
             new HttpRequest(url, "PUT", callback);
