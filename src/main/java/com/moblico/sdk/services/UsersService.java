@@ -2,6 +2,7 @@ package com.moblico.sdk.services;
 
 import android.content.Context;
 
+import com.moblico.sdk.entities.Status;
 import com.moblico.sdk.entities.User;
 
 import java.lang.reflect.Field;
@@ -11,6 +12,30 @@ import java.util.Map;
 public class UsersService {
 
     private UsersService() {
+    }
+
+    public static void userExists(final String username, final Callback<Boolean> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("username", username);
+                HttpRequest.get("users/exists", params, new ErrorForwardingCallback<String>(callback) {
+
+                    @Override
+                    public void onSuccess(String result) {
+                        Status status = Moblico.getGson().fromJson(result, Status.class);
+                        if (status.hasStatus() && status.getStatusType() == 86) {
+                            // This is a bit of a hack.  The return value for user exists vs doesn't
+                            // exist is not consistent.
+                            callback.onSuccess(false);
+                        } else {
+                            callback.onSuccess(true);
+                        }
+                    }
+                });
+            }
+        });
     }
 
     public static void getUser(final String username, final Callback<User> callback) {

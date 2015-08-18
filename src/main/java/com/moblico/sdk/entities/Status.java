@@ -29,6 +29,10 @@ public class Status {
         this.status = status;
     }
 
+    public boolean hasStatus() {
+        return status != null;
+    }
+
     public String getMessage() {
         return status.message;
     }
