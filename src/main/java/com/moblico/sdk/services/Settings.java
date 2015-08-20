@@ -67,4 +67,8 @@ public class Settings {
         }
         return defaultValue;
     }
+
+    public boolean hasKey(final String key) {
+        return mSettings.containsKey(key);
+    }
 }
