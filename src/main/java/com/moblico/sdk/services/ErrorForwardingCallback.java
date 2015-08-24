@@ -9,6 +9,8 @@ public abstract class ErrorForwardingCallback<T> implements Callback<T> {
 
     @Override
     public void onFailure(Throwable caught) {
-        mCallback.onFailure(caught);
+        if (mCallback != null) {
+            mCallback.onFailure(caught);
+        }
     }
 }
