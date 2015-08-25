@@ -25,7 +25,7 @@ public class UsersService {
                     @Override
                     public void onSuccess(String result) {
                         Status status = Moblico.getGson().fromJson(result, Status.class);
-                        if (status.hasStatus() && status.getStatusType() == 86) {
+                        if (status.hasStatus() && status.getStatusType() == Status.StatusType.USER_NOT_FOUND) {
                             // This is a bit of a hack.  The return value for user exists vs doesn't
                             // exist is not consistent.
                             callback.onSuccess(false);
