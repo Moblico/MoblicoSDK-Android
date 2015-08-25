@@ -19,14 +19,13 @@ public final class RewardsService {
         @Override
         public int compare(Reward lhs, Reward rhs) {
             if (lhs == null) {
-                return rhs == null ? 0 : 1;
-            } else if (rhs == null) {
-                return -1;
+                return rhs == null ? 0 : Integer.MAX_VALUE;
             }
-            if (lhs.isRedeemable() != rhs.isRedeemable()) {
-                return lhs.isRedeemable() ? -1 : 1;
+            if (rhs == null) {
+                return Integer.MIN_VALUE;
             }
-            return lhs.getEndDate().compareTo(rhs.getEndDate());
+
+            return lhs.compareTo(rhs);
         }
     };
 

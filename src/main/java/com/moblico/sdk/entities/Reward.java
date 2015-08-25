@@ -111,4 +111,28 @@ public class Reward extends Deal {
                 ", cardRedemptionEnabled=" + cardRedemptionEnabled +
                 '}';
     }
+
+    public int compareTo(Reward o) {
+        boolean thisIsRedeemable = this.isRedeemable();
+
+        // Required API 19
+        // int results = Boolean.compare(o.isRedeemable(), thisIsRedeemable);
+        int results = ((Boolean)o.isRedeemable()).compareTo((Boolean)thisIsRedeemable);
+
+        if (results != 0) {
+            return results;
+        }
+
+        if (!thisIsRedeemable) {
+            // Requires API 19
+            // results = Long.compare(this.getPoints(), o.getPoints());
+            results = ((Long)this.getPoints()).compareTo((Long)o.getPoints());
+        }
+
+        if (results != 0) {
+            return results;
+        }
+
+        return super.compareTo(o);
+    }
 }

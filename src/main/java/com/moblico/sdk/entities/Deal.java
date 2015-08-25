@@ -3,9 +3,10 @@ package com.moblico.sdk.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.lang.Comparable;
 import java.util.Date;
 
-public class Deal implements Parcelable {
+public class Deal implements Parcelable, Comparable<Deal> {
     private final long id;
     private final Date createDate;
     private final Date lastUpdateDate;
@@ -170,4 +171,23 @@ public class Deal implements Parcelable {
                 ", promoText='" + promoText + '\'' +
                 '}';
     }
+
+    public int compareTo(Deal o) {
+        int results = this.getEndDate().compareTo(o.getEndDate());
+        if (results != 0) {
+            return results;
+        }
+        
+        results = this.getName().compareToIgnoreCase(o.getName());
+
+        if (results != 0) {
+            return results;
+        }
+
+        // Requires API 19
+        // return Long.compare(this.getId(), o.getId());
+
+        return ((Long)this.getId()).compareTo((Long)o.getId());
+    }
+
 }
