@@ -2,6 +2,7 @@ package com.moblico.sdk.services;
 
 import com.google.gson.reflect.TypeToken;
 import com.moblico.sdk.entities.Deal;
+import com.moblico.sdk.entities.Location;
 import com.moblico.sdk.entities.Reward;
 
 import java.lang.reflect.Type;
@@ -34,6 +35,22 @@ public final class RewardsService {
             @Override
             public void onSuccess(Void result) {
                 HttpRequest.get("rewards", null, new ErrorForwardingCallback<String>(callback) {
+                    @Override
+                    public void onSuccess(String result) {
+                        Type collectionType = new TypeToken<List<Reward>>() {}.getType();
+                        List<Reward> rewards = Moblico.getGson().fromJson(result, collectionType);
+                        callback.onSuccess(rewards);
+                    }
+                });
+            }
+        });
+    }
+
+    public static void getRewardsAtLocation(final Location location, final Callback<List<Reward>> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                HttpRequest.get("locations/" + location.getId() + "/rewards", null, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
                         Type collectionType = new TypeToken<List<Reward>>() {}.getType();
