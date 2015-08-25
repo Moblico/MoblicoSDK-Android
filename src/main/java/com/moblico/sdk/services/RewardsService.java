@@ -30,6 +30,21 @@ public final class RewardsService {
         }
     };
 
+    public static void getReward(final long id, final Callback<Reward> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                HttpRequest.get("rewards/" + id, null, new ErrorForwardingCallback<String>(callback) {
+                    @Override
+                    public void onSuccess(String result) {
+                        Reward reward = Moblico.getGson().fromJson(result, Reward.class);
+                        callback.onSuccess(reward);
+                    }
+                });
+            }
+        });
+    }
+
     public static void getRewards(final Callback<List<Reward>> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
@@ -74,6 +89,20 @@ public final class RewardsService {
                         if (callback != null) {
                             callback.onSuccess(null);
                         }
+                    }
+                });
+            }
+        });
+    }
+
+    public static void purchaseReward(final Reward reward, final Callback<Void> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                HttpRequest.put("rewards/" + reward.getId() + "/purchase", null, new ErrorForwardingCallback<String>(callback) {
+                    @Override
+                    public void onSuccess(String result) {
+                        callback.onSuccess(null);
                     }
                 });
             }
