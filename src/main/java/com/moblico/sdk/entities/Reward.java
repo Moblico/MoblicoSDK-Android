@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import java.util.Date;
 
-public class Reward extends Deal {
+public class Reward extends Deal implements Comparable<Deal> {
     private final long points;
     private final long numberOfPurchases;
     private final long maxPurchases;
@@ -112,21 +112,25 @@ public class Reward extends Deal {
                 '}';
     }
 
-    public int compareTo(Reward o) {
-        boolean thisIsRedeemable = this.isRedeemable();
+    @Override
+    public int compareTo(Deal o) {
+        if (!(o instanceof Reward)) {
+            return super.compareTo(o);
+        }
+        Reward r = (Reward)o;
 
         // Required API 19
         // int results = Boolean.compare(o.isRedeemable(), thisIsRedeemable);
-        int results = ((Boolean)o.isRedeemable()).compareTo((Boolean)thisIsRedeemable);
+        int results = ((Boolean)isRedeemable()).compareTo((Boolean)r.isRedeemable());
 
         if (results != 0) {
             return results;
         }
 
-        if (!thisIsRedeemable) {
+        if (!isRedeemable()) {
             // Requires API 19
             // results = Long.compare(this.getPoints(), o.getPoints());
-            results = ((Long)this.getPoints()).compareTo((Long)o.getPoints());
+            results = ((Long)this.getPoints()).compareTo((Long)r.getPoints());
         }
 
         if (results != 0) {
