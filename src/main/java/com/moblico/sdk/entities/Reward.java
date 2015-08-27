@@ -121,7 +121,7 @@ public class Reward extends Deal implements Comparable<Deal> {
 
         // Required API 19
         // int results = Boolean.compare(o.isRedeemable(), thisIsRedeemable);
-        int results = ((Boolean)isRedeemable()).compareTo((Boolean)r.isRedeemable());
+        int results = ((Boolean)r.isRedeemable()).compareTo((Boolean)isRedeemable());
 
         if (results != 0) {
             return results;
