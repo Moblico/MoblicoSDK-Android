@@ -31,4 +31,20 @@ public final class AffinitiesService {
             }
         });
     }
+
+    public static void scanCode(final String qrCodeId, final Callback<Void> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                Map<String, String> params = new HashMap<>();
+                params.put("qrCodeId", qrCodeId);
+                HttpRequest.put("users/" + Moblico.getUsername() + "/points/scan", params, new ErrorForwardingCallback<String>(callback) {
+                    @Override
+                    public void onSuccess(String result) {
+                        callback.onSuccess(null);
+                    }
+                });
+            }
+        });
+    }
 }

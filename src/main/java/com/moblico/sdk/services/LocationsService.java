@@ -26,6 +26,20 @@ public final class LocationsService {
                 });
             }
         });
+    }
 
+    public static void getLocation(final long locationId, final Callback<Location> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                HttpRequest.get("locations/" + locationId, null, new ErrorForwardingCallback<String>(callback) {
+                    @Override
+                    public void onSuccess(String result) {
+                        Location location = Moblico.getGson().fromJson(result, Location.class);
+                        callback.onSuccess(location);
+                    }
+                });
+            }
+        });
     }
 }
