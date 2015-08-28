@@ -161,19 +161,19 @@ public class Status {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        if(getHttpStatus() > 0) {
+        if(getHttpStatus() > 0 && (getMessage() == null || getMessage().isEmpty())) {
             sb.append("HTTP ");
             sb.append(getHttpStatus());
             sb.append(": ");
         }
-        if(getMessage() != null && getMessage().length() > 0) {
+        if(getMessage() != null && !getMessage().isEmpty()) {
             sb.append(getMessage());
         }
-        if(getVerboseMessage() != null && getVerboseMessage().length() > 0) {
+        if(getVerboseMessage() != null && !getVerboseMessage().isEmpty()) {
             sb.append('\n');
             sb.append(getVerboseMessage());
         }
-        if(getHelpUrl() != null && getHelpUrl().length() > 0) {
+        if(getHelpUrl() != null && !getHelpUrl().isEmpty()) {
             sb.append('\n');
             sb.append("More info at: ");
             sb.append(getHelpUrl());
