@@ -57,6 +57,28 @@ public class Settings {
         return defaultValue;
     }
 
+    public long getLong(final String key, final long defaultValue) {
+        if (mSettings.containsKey(key)) {
+            try {
+                return Long.parseLong(mSettings.get(key));
+            } catch (Throwable t) {
+                return defaultValue;
+            }
+        }
+        return defaultValue;
+    }
+
+    public float getFloat(final String key, final float defaultValue) {
+        if (mSettings.containsKey(key)) {
+            try {
+                return Float.parseFloat(mSettings.get(key));
+            } catch (Throwable t) {
+                return defaultValue;
+            }
+        }
+        return defaultValue;
+    }
+
     public boolean getBoolean(final String key, final boolean defaultValue) {
         if (mSettings.containsKey(key)) {
             try {
