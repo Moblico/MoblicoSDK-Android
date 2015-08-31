@@ -38,6 +38,7 @@ public class Location implements Parcelable {
     private final String geoEnterNotificationText;
     private final boolean checkinEnabled;
     private final int checkinRadius;
+    private final String beaconIdentifier;
     private final Map<String, String> attributes;
 
     protected Location(Parcel in) {
@@ -73,6 +74,7 @@ public class Location implements Parcelable {
         geoEnterNotificationText = in.readString();
         checkinEnabled = in.readByte() != 0x00;
         checkinRadius = in.readInt();
+        beaconIdentifier = in.readString();
         // TODO: move this pattern to a base class if it is used much
         final int size = in.readInt();
         attributes = new HashMap<String, String>(size);
@@ -120,6 +122,7 @@ public class Location implements Parcelable {
         dest.writeString(geoEnterNotificationText);
         dest.writeByte((byte) (checkinEnabled ? 0x01 : 0x00));
         dest.writeInt(checkinRadius);
+        dest.writeString(beaconIdentifier);
         dest.writeInt(attributes.size());
         for(Map.Entry<String,String> entry : attributes.entrySet()){
             dest.writeString(entry.getKey());
@@ -260,6 +263,10 @@ public class Location implements Parcelable {
         return checkinRadius;
     }
 
+    public String getBeaconIdentifier() {
+        return beaconIdentifier;
+    }
+
     public boolean hasAttribute(final String attribute) {
         return attributes.containsKey(attribute);
     }
@@ -301,6 +308,7 @@ public class Location implements Parcelable {
                 ", geoEnterNotificationText='" + geoEnterNotificationText + '\'' +
                 ", checkinEnabled=" + checkinEnabled +
                 ", checkinRadius=" + checkinRadius +
+                ", beaconIdentifier=" + beaconIdentifier +
                 ", attributes=" + attributes +
                 '}';
     }
