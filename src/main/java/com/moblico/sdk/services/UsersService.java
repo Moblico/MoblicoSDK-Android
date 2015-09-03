@@ -1,6 +1,7 @@
 package com.moblico.sdk.services;
 
 import android.content.Context;
+import android.net.Uri;
 
 import com.moblico.sdk.entities.Status;
 import com.moblico.sdk.entities.User;
@@ -42,7 +43,7 @@ public class UsersService {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
-                HttpRequest.get("users/" + username, null, new ErrorForwardingCallback<String>(callback) {
+                HttpRequest.get("users/" + Uri.encode(username), null, new ErrorForwardingCallback<String>(callback) {
 
                     @Override
                     public void onSuccess(String result) {
@@ -81,7 +82,7 @@ public class UsersService {
                 if (!username.equals(user.getUsername())) {
                     params.put("newUsername", user.getUsername());
                 }
-                HttpRequest.put("users/" + username, params, new ErrorForwardingCallback<String>(callback) {
+                HttpRequest.put("users/" + Uri.encode(username), params, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
                         callback.onSuccess(null);

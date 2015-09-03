@@ -11,6 +11,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.moblico.sdk.entities.AuthenticationToken;
+import com.moblico.sdk.entities.User;
 
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
@@ -19,6 +20,11 @@ import java.util.Date;
 import java.util.Map;
 
 public final class Moblico {
+
+    public enum SocialType {
+        NONE,
+        FACEBOOK
+    }
 
     private static final String USERNAME_KEY = "MOBLICO_LOGIN_USERNAME";
     private static final String PASSWORD_KEY = "MOBLICO_LOGIN_PASSWORD";
@@ -32,6 +38,7 @@ public final class Moblico {
     private static String sUsername;
     private static String sPassword;
     private static String sClientCode;
+    private static SocialType sSocialType = SocialType.NONE;
     private static SharedPreferences sSharedPrefs;
     private static Gson sGson;
 
@@ -117,9 +124,14 @@ public final class Moblico {
         sTesting = testing;
     }
 
-    public static void setUser(final String username, final String password, final boolean persist) {
+    public static void setUser(final String username, final String password,
+                               final SocialType socialType, final boolean persist) {
+        if (socialType == SocialType.FACEBOOK && persist) {
+            throw new UnsupportedOperationException("Cannot persist facebook logins!");
+        }
         sUsername = username;
         sPassword = password;
+        sSocialType = socialType;
         if (persist) {
             SharedPreferences.Editor edit = sSharedPrefs.edit();
             edit.putString(USERNAME_KEY, username);
@@ -131,6 +143,11 @@ public final class Moblico {
             edit.apply();
         }
         sToken = null;
+    }
+
+
+    public static void clearUser() {
+        setUser(null, null, SocialType.NONE, true);
     }
 
     public static void setClientCode(final String clientCode) {
@@ -162,5 +179,9 @@ public final class Moblico {
             sClientCode = sSharedPrefs.getString(CLIENT_CODE_KEY, null);
         }
         return sClientCode;
+    }
+
+    public static SocialType getSocialType() {
+        return sSocialType;
     }
 }

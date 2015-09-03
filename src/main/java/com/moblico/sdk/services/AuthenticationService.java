@@ -1,5 +1,6 @@
 package com.moblico.sdk.services;
 
+import com.facebook.AccessToken;
 import com.moblico.sdk.entities.AuthenticationToken;
 
 import java.util.HashMap;
@@ -27,7 +28,22 @@ public final class AuthenticationService {
         params.put("platformName", "ANDROID");
         if (Moblico.getUsername() != null) {
             params.put("username", Moblico.getUsername());
-            params.put("password", Moblico.getPassword());
+            switch (Moblico.getSocialType()) {
+                case FACEBOOK:
+                    params.put("social", "FACEBOOK");
+                    if (AccessToken.getCurrentAccessToken() != null) {
+                        // The Facebook SDK says this should always exist and be up to date, if we've
+                        // already logged the user in.  If this isn't the case, things get tricky.
+                        // We need to show the user a new login activity/fragment.
+                        params.put("socialToken", AccessToken.getCurrentAccessToken().getToken());
+                    }
+                    break;
+                case NONE:
+                    params.put("password", Moblico.getPassword());
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Unknown social type: " + Moblico.getSocialType());
+            }
             if (Moblico.getClientCode() != null) {
                 params.put("childKeyword", Moblico.getClientCode());
             }
