@@ -39,6 +39,8 @@ public class Location implements Parcelable {
     private final boolean checkinEnabled;
     private final int checkinRadius;
     private final String beaconIdentifier;
+    private final boolean beaconNotificationEnabled;
+    private final String beaconEnterNotificationText;
     private final Map<String, String> attributes;
 
     protected Location(Parcel in) {
@@ -75,6 +77,8 @@ public class Location implements Parcelable {
         checkinEnabled = in.readByte() != 0x00;
         checkinRadius = in.readInt();
         beaconIdentifier = in.readString();
+        beaconNotificationEnabled = in.readByte() != 0x00;
+        beaconEnterNotificationText = in.readString();
         // TODO: move this pattern to a base class if it is used much
         final int size = in.readInt();
         attributes = new HashMap<String, String>(size);
@@ -123,6 +127,8 @@ public class Location implements Parcelable {
         dest.writeByte((byte) (checkinEnabled ? 0x01 : 0x00));
         dest.writeInt(checkinRadius);
         dest.writeString(beaconIdentifier);
+        dest.writeByte((byte) (beaconNotificationEnabled ? 0x01 : 0x00));
+        dest.writeString(beaconEnterNotificationText);
         dest.writeInt(attributes.size());
         for(Map.Entry<String,String> entry : attributes.entrySet()){
             dest.writeString(entry.getKey());
@@ -267,6 +273,14 @@ public class Location implements Parcelable {
         return beaconIdentifier;
     }
 
+    public boolean isBeaconNotificationEnabled() {
+        return beaconNotificationEnabled;
+    }
+
+    public String getBeaconEnterNotificationText() {
+        return beaconEnterNotificationText;
+    }
+
     public boolean hasAttribute(final String attribute) {
         return attributes.containsKey(attribute);
     }
@@ -309,7 +323,24 @@ public class Location implements Parcelable {
                 ", checkinEnabled=" + checkinEnabled +
                 ", checkinRadius=" + checkinRadius +
                 ", beaconIdentifier=" + beaconIdentifier +
+                ", beaconNotificationEnabled=" + beaconNotificationEnabled +
+                ", beaconEnterNotificationText=" + beaconEnterNotificationText +
                 ", attributes=" + attributes +
                 '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (id ^ (id >>> 32));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Location location = (Location) o;
+
+        return id == location.id;
     }
 }

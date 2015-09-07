@@ -54,7 +54,9 @@ public final class LocationsService {
                 HttpRequest.post("checkIn", params, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
-                        callback.onSuccess(null);
+                        if (callback != null) {
+                            callback.onSuccess(null);
+                        }
                     }
                 });
             }
