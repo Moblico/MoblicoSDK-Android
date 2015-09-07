@@ -11,7 +11,6 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.moblico.sdk.entities.AuthenticationToken;
-import com.moblico.sdk.entities.User;
 
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
