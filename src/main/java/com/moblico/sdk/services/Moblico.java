@@ -124,6 +124,10 @@ public final class Moblico {
         sTesting = testing;
     }
 
+    public static boolean isTesting() {
+        return sTesting;
+    }
+
     public static void setUser(final String username, final String password,
                                final SocialType socialType, final boolean persist) {
         if (socialType == SocialType.FACEBOOK && persist) {
