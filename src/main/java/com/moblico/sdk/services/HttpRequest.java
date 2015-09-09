@@ -44,6 +44,15 @@ public class HttpRequest extends AsyncTask<URL, Void, String> {
         }
     }
 
+    static public void delete(final String path, final Map<String, String> params, final Callback<String> callback) {
+        try {
+            final URL url = Moblico.buildUrl(path, params);
+            new HttpRequest(url, "DELETE", callback);
+        } catch (MalformedURLException e) {
+            callback.onFailure(e);
+        }
+    }
+
     private final Callback<String> mCallback;
     private final String mRequestMethod;
     private Throwable mThrowable;
