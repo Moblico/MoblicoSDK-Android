@@ -1,7 +1,6 @@
 package com.moblico.sdk.services;
 
 import com.google.gson.reflect.TypeToken;
-import com.moblico.sdk.entities.ItemList;
 import com.moblico.sdk.entities.ListItem;
 
 import java.lang.reflect.Field;
@@ -16,7 +15,7 @@ public class ListItemsService {
 
     //GET lists<id>/listItems - returns list of items for a given list
     //curl -X GET 'https://moblicosandbox.com/services/v4/lists/9/listItems?token=CXJtaGhuZWlraW9oZG1scmRqcm1qaXJob25lanIVDBQTEhk%3d'
-    public static void getListItems(final Long listId, final Callback<List<ListItem>> callback) {
+    public static void getListItems(final long listId, final Callback<List<ListItem>> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
@@ -35,7 +34,7 @@ public class ListItemsService {
 
     //POST lists/<id>/listItems?name=corn - add item to shopping list
     //curl -X POST 'https://moblicosandbox.com/services/v4/lists/12/listItems?token=CXJtaGhuZWlraW9oZG1scmRqcm1qaXJob25lanIVDBQTEhk%3d&name=corn'
-    public static void addItemToList(final ListItem item, final Long listId, final String name, final Callback<Void> callback) {
+    public static void addItemToList(final ListItem item, final long listId, final String name, final Callback<Void> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
@@ -54,7 +53,7 @@ public class ListItemsService {
 
     //* PUT listItems/<listItemId>?name=corn - update a line items already in a list
     // curl -X PUT 'https://moblicosandbox.com/services/v4/listItems/11?token=CXJtaGhuZWlraW9oZG1scmRqcm1qaXJob25lanIVDBQTEhk%3d&name=corny'
-    public static void updateItemInList(final ListItem item, final Long listItemId, final String name, final Callback<Void> callback) {
+    public static void updateItemInList(final ListItem item, final long listItemId, final String name, final Callback<Void> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
@@ -73,7 +72,7 @@ public class ListItemsService {
 
     //* DELETE listItems/<listItemId> - delete line item
     //curl -X DELETE 'https://moblicosandbox.com/services/v4/listItems/11?token=CXJtaGhuZWlraW9oZG1scmRqcm1qaXJob25lanIVDBQTEhk%3d'
-    public static void removeItemFromList(final Long listItemId, final Callback<Void> callback) {
+    public static void removeItemFromList(final long listItemId, final Callback<Void> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
