@@ -34,12 +34,11 @@ public class ListItemsService {
 
     //POST lists/<id>/listItems?name=corn - add item to shopping list
     //curl -X POST 'https://moblicosandbox.com/services/v4/lists/12/listItems?token=CXJtaGhuZWlraW9oZG1scmRqcm1qaXJob25lanIVDBQTEhk%3d&name=corn'
-    public static void addItemToList(final ListItem item, final long listId, final String name, final Callback<Void> callback) {
+    public static void addItemToList(final ListItem item, final long listId, final Callback<Void> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("name", name);
                 params.putAll(getItemParams(item));
                 HttpRequest.post("lists/" + listId + "/listItems", params, new ErrorForwardingCallback<String>(callback) {
                     @Override
@@ -53,14 +52,13 @@ public class ListItemsService {
 
     //* PUT listItems/<listItemId>?name=corn - update a line items already in a list
     // curl -X PUT 'https://moblicosandbox.com/services/v4/listItems/11?token=CXJtaGhuZWlraW9oZG1scmRqcm1qaXJob25lanIVDBQTEhk%3d&name=corny'
-    public static void updateItemInList(final ListItem item, final long listItemId, final String name, final Callback<Void> callback) {
+    public static void updateItemInList(final ListItem item, final Callback<Void> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("name", name);
                 params.putAll(getItemParams(item));
-                HttpRequest.put("listItems/" + listItemId, params, new ErrorForwardingCallback<String>(callback) {
+                HttpRequest.put("listItems/" + item.getId(), params, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
                         callback.onSuccess(null);
