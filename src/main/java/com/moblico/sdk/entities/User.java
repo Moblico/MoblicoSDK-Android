@@ -48,13 +48,20 @@ public class User implements Parcelable {
     private final Date lastUpdateDate;
     private final ContactPreferenceType contactPreference;
     private final GenderType gender;
+    private final String locationId;
+    private final String attr1;
+    private final String attr2;
+    private final String attr3;
+    private final String attr4;
+    private final String attr5;
     private final Map<String, String> attributes;
 
     public User(String username, String password, String phone, String email, String nickName,
                 String locale, String firstName, String lastName, String address1, String address2,
                 String city, String stateOrProvince, String country, String postalCode,
                 String dateOfBirth, String age, boolean optinEmail, boolean optinPhone,
-                ContactPreferenceType contactPreference, GenderType gender) {
+                ContactPreferenceType contactPreference, GenderType gender, String locationId,
+                String attr1, String attr2, String attr3, String attr4, String attr5) {
         this.username = username;
         this.password = password;
         this.phone = phone;
@@ -75,6 +82,12 @@ public class User implements Parcelable {
         this.optinPhone = optinPhone;
         this.contactPreference = contactPreference;
         this.gender = gender;
+        this.locationId = locationId;
+        this.attr1 = attr1;
+        this.attr2 = attr2;
+        this.attr3 = attr3;
+        this.attr4 = attr4;
+        this.attr5 = attr5;
         this.createDate = null;
         this.lastUpdateDate = null;
         this.attributes = new HashMap<>();
@@ -105,6 +118,12 @@ public class User implements Parcelable {
         lastUpdateDate = tmpLastUpdateDate != -1 ? new Date(tmpLastUpdateDate) : null;
         contactPreference = (ContactPreferenceType) in.readValue(ContactPreferenceType.class.getClassLoader());
         gender = (GenderType) in.readValue(GenderType.class.getClassLoader());
+        locationId = in.readString();
+        attr1 = in.readString();
+        attr2 = in.readString();
+        attr3 = in.readString();
+        attr4 = in.readString();
+        attr5 = in.readString();
         // TODO: move this pattern to a base class if it is used much
         final int size = in.readInt();
         attributes = new HashMap<String, String>(size);
@@ -144,6 +163,12 @@ public class User implements Parcelable {
         dest.writeLong(lastUpdateDate != null ? lastUpdateDate.getTime() : -1L);
         dest.writeValue(contactPreference);
         dest.writeValue(gender);
+        dest.writeString(locationId);
+        dest.writeString(attr1);
+        dest.writeString(attr2);
+        dest.writeString(attr3);
+        dest.writeString(attr4);
+        dest.writeString(attr5);
         dest.writeInt(attributes.size());
         for(Map.Entry<String,String> entry : attributes.entrySet()){
             dest.writeString(entry.getKey());
@@ -168,6 +193,10 @@ public class User implements Parcelable {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public boolean isOptinEmail() {
@@ -250,6 +279,30 @@ public class User implements Parcelable {
         return gender;
     }
 
+    public String getLocationId() {
+        return locationId;
+    }
+
+    public String getAttr1() {
+        return attr1;
+    }
+
+    public String getAttr2() {
+        return attr2;
+    }
+
+    public String getAttr3() {
+        return attr3;
+    }
+
+    public String getAttr4() {
+        return attr4;
+    }
+
+    public String getAttr5() {
+        return attr5;
+    }
+
     public Map<String, String> getAttributes() {
         return attributes;
     }
@@ -278,6 +331,12 @@ public class User implements Parcelable {
                 ", lastUpdateDate=" + lastUpdateDate +
                 ", contactPreference=" + contactPreference +
                 ", gender=" + gender +
+                ", locationId=" + locationId +
+                ", attr1=" + attr1 +
+                ", attr2=" + attr2 +
+                ", attr3=" + attr3 +
+                ", attr4=" + attr4 +
+                ", attr5=" + attr5 +
                 ", attributes=" + attributes +
                 '}';
     }
