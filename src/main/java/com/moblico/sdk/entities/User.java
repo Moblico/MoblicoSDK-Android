@@ -49,11 +49,7 @@ public class User implements Parcelable {
     private final ContactPreferenceType contactPreference;
     private final GenderType gender;
     private final String locationId;
-    private final String attr1;
-    private final String attr2;
-    private final String attr3;
-    private final String attr4;
-    private final String attr5;
+    private final String externalId;
     private final Map<String, String> attributes;
 
     public User(String username, String password, String phone, String email, String nickName,
@@ -61,7 +57,7 @@ public class User implements Parcelable {
                 String city, String stateOrProvince, String country, String postalCode,
                 String dateOfBirth, String age, boolean optinEmail, boolean optinPhone,
                 ContactPreferenceType contactPreference, GenderType gender, String locationId,
-                String attr1, String attr2, String attr3, String attr4, String attr5) {
+                Map<String, String> attributes) {
         this.username = username;
         this.password = password;
         this.phone = phone;
@@ -83,14 +79,13 @@ public class User implements Parcelable {
         this.contactPreference = contactPreference;
         this.gender = gender;
         this.locationId = locationId;
-        this.attr1 = attr1;
-        this.attr2 = attr2;
-        this.attr3 = attr3;
-        this.attr4 = attr4;
-        this.attr5 = attr5;
+        this.externalId = null;
         this.createDate = null;
         this.lastUpdateDate = null;
         this.attributes = new HashMap<>();
+        if (attributes != null) {
+            this.attributes.putAll(attributes);
+        }
     }
 
     protected User(Parcel in) {
@@ -119,11 +114,7 @@ public class User implements Parcelable {
         contactPreference = (ContactPreferenceType) in.readValue(ContactPreferenceType.class.getClassLoader());
         gender = (GenderType) in.readValue(GenderType.class.getClassLoader());
         locationId = in.readString();
-        attr1 = in.readString();
-        attr2 = in.readString();
-        attr3 = in.readString();
-        attr4 = in.readString();
-        attr5 = in.readString();
+        externalId = in.readString();
         // TODO: move this pattern to a base class if it is used much
         final int size = in.readInt();
         attributes = new HashMap<String, String>(size);
@@ -164,11 +155,7 @@ public class User implements Parcelable {
         dest.writeValue(contactPreference);
         dest.writeValue(gender);
         dest.writeString(locationId);
-        dest.writeString(attr1);
-        dest.writeString(attr2);
-        dest.writeString(attr3);
-        dest.writeString(attr4);
-        dest.writeString(attr5);
+        dest.writeString(externalId);
         dest.writeInt(attributes.size());
         for(Map.Entry<String,String> entry : attributes.entrySet()){
             dest.writeString(entry.getKey());
@@ -283,24 +270,8 @@ public class User implements Parcelable {
         return locationId;
     }
 
-    public String getAttr1() {
-        return attr1;
-    }
-
-    public String getAttr2() {
-        return attr2;
-    }
-
-    public String getAttr3() {
-        return attr3;
-    }
-
-    public String getAttr4() {
-        return attr4;
-    }
-
-    public String getAttr5() {
-        return attr5;
+    public String getExternalId() {
+        return externalId;
     }
 
     public Map<String, String> getAttributes() {
@@ -332,11 +303,6 @@ public class User implements Parcelable {
                 ", contactPreference=" + contactPreference +
                 ", gender=" + gender +
                 ", locationId=" + locationId +
-                ", attr1=" + attr1 +
-                ", attr2=" + attr2 +
-                ", attr3=" + attr3 +
-                ", attr4=" + attr4 +
-                ", attr5=" + attr5 +
                 ", attributes=" + attributes +
                 '}';
     }
