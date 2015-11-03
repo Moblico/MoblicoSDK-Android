@@ -101,13 +101,14 @@ public class UsersService {
         // a field is added to user, we get it for free.  There might be easier ways to do
         // this with existing libraries...
         Map<String, String> params = new HashMap<String, String>();
+        params.putAll(user.getAttributes());
         for(Field field : User.class.getDeclaredFields()) {
             field.setAccessible(true);
             try {
                 if (field.getType().equals(boolean.class)) {
                     params.put(field.getName(), field.getBoolean(user) ? "YES" : "NO");
                 } else if (field.getName().equals("attributes")) {
-                    // Skip attributes!
+                    // Skip attributes!  They were already added above.
                 } else if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
                     // Skip static fields!
                 } else {
