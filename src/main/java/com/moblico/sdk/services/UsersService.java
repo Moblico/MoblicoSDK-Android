@@ -39,6 +39,21 @@ public class UsersService {
         });
     }
 
+    public static void resetPassword(final String username, final Callback<Void> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                HttpRequest.post("users/" + Uri.encode(username) + "/resetPassword", null, new ErrorForwardingCallback<String>(callback) {
+
+                    @Override
+                    public void onSuccess(String result) {
+                        callback.onSuccess(null);
+                    }
+                });
+            }
+        });
+    }
+
     public static void getUser(final String username, final Callback<User> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
