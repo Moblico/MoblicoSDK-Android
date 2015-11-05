@@ -2,6 +2,7 @@ package com.moblico.sdk.services;
 
 import android.content.Context;
 import android.location.LocationManager;
+import android.support.annotation.NonNull;
 
 import com.google.gson.reflect.TypeToken;
 import com.moblico.sdk.entities.Location;
@@ -32,6 +33,24 @@ public final class LocationsService {
                         params.put("longitude", Double.toString(location.getLongitude()));
                     }
                 }
+                HttpRequest.get("locations", params, new ErrorForwardingCallback<String>(callback) {
+                    @Override
+                    public void onSuccess(String result) {
+                        Type collectionType = new TypeToken<List<Location>>() {}.getType();
+                        List<Location> locations = Moblico.getGson().fromJson(result, collectionType);
+                        callback.onSuccess(locations);
+                    }
+                });
+            }
+        });
+    }
+
+    public static void findLocationsByZip(final @NonNull String zipcode, final Callback<List<Location>> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                Map<String, String> params = new HashMap<>();
+                params.put("zipcode", zipcode);
                 HttpRequest.get("locations", params, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
