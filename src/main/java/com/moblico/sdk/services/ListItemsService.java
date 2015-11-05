@@ -34,7 +34,7 @@ public class ListItemsService {
 
     //POST lists/<id>/listItems?name=corn - add item to shopping list
     //curl -X POST 'https://moblicosandbox.com/services/v4/lists/12/listItems?token=CXJtaGhuZWlraW9oZG1scmRqcm1qaXJob25lanIVDBQTEhk%3d&name=corn'
-    public static void addItemToList(final ListItem item, final long listId, final Callback<Void> callback) {
+    public static void addItemToList(final ListItem item, final long listId, final Callback<ListItem> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
@@ -43,7 +43,8 @@ public class ListItemsService {
                 HttpRequest.post("lists/" + listId + "/listItems", params, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
-                        callback.onSuccess(null);
+                        ListItem listItem = Moblico.getGson().fromJson(result,ListItem.class);
+                        callback.onSuccess(listItem);
                     }
                 });
             }
