@@ -22,35 +22,33 @@ public final class LocationsService {
      * include the context parameter.  If distance isn't important, context can be null.
      */
     public static void findLocations(final Context context, final Callback<List<Location>> callback) {
-        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
-            @Override
-            public void onSuccess(Void result) {
-                Map<String, String> params = new HashMap<>();
-                if (context != null) {
-                    android.location.Location location = findLocation(context);
-                    if (location != null) {
-                        params.put("latitude", Double.toString(location.getLatitude()));
-                        params.put("longitude", Double.toString(location.getLongitude()));
-                    }
-                }
-                HttpRequest.get("locations", params, new ErrorForwardingCallback<String>(callback) {
-                    @Override
-                    public void onSuccess(String result) {
-                        Type collectionType = new TypeToken<List<Location>>() {}.getType();
-                        List<Location> locations = Moblico.getGson().fromJson(result, collectionType);
-                        callback.onSuccess(locations);
-                    }
-                });
+        if (context != null) {
+            android.location.Location location = findLocation(context);
+            if (location != null) {
+                findLocations(callback, "latitude", Double.toString(location.getLatitude()),
+                        "longitude", Double.toString(location.getLongitude()));
+                return;
             }
-        });
+        }
+        findLocations(callback);
     }
 
     public static void findLocationsByZip(final @NonNull String zipcode, final Callback<List<Location>> callback) {
+        findLocations(callback, "zipcode", zipcode);
+    }
+
+    public static void findLocations(final Callback<List<Location>> callback, final String... parameters) {
+        if ((parameters.length & 1) == 1) {
+            // The parameter length is odd, we must have an even number for key:value pairs!
+            throw new IllegalArgumentException("An even number of parameters is required");
+        }
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
                 Map<String, String> params = new HashMap<>();
-                params.put("zipcode", zipcode);
+                for (int i = 0; i < parameters.length; i+=2) {
+                    params.put(parameters[i], parameters[i+1]);
+                }
                 HttpRequest.get("locations", params, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
