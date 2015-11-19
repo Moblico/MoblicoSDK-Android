@@ -30,7 +30,11 @@ public final class MetricsService {
         VIEW_MEDIA("View_Media"),
         SHARE_APP("Share_App"),
         SHARE_DEAL("Share_Deal"),
-        SHARE_REWARD("Share_Reward");
+        SHARE_REWARD("Share_Reward"),
+        ENTER_GEO_REGION("Enter_Geo_Region"),
+        EXIT_GEO_REGION("Exit_Geo_Region"),
+        ENTER_BEACON_REGION("Enter_Beacon_Region"),
+        EXIT_BEACON_REGION("Exit_Beacon_Region");
 
         private final String text;
         private Type(String text) {
