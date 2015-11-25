@@ -31,6 +31,7 @@ public final class MetricsService {
         SHARE_APP("Share_App"),
         SHARE_DEAL("Share_Deal"),
         SHARE_REWARD("Share_Reward"),
+        SHARE_LOCATION("Share_Location"),
         ENTER_GEO_REGION("Enter_Geo_Region"),
         EXIT_GEO_REGION("Exit_Geo_Region"),
         ENTER_BEACON_REGION("Enter_Beacon_Region"),
