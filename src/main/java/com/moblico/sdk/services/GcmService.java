@@ -77,6 +77,33 @@ public class GcmService {
     }
 
     /**
+     * Unregister the device from GCM and Moblico so they will no longer receive push notifications.
+     */
+    public static void unregisterDevice(final @NonNull Context context) {
+        Intent i = new Intent(context, RegistrationService.class);
+        i.putExtra(RegistrationService.EXTRA_UNREGISTER, true);
+        context.startService(i);
+        AuthenticationService.authenticate(new Callback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                HttpRequest.delete("users/" + Uri.encode(Moblico.getUsername()) + "/device", null, new Callback<String>() {
+                    @Override
+                    public void onSuccess(String result) {
+                    }
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+            }
+        });
+    }
+
+    /**
      * Register a user's device with the given device ID.  This is typically used as an internal
      * API call, and most developers will want to call {@link GcmService#registerDevice(Context)}
      * instead.
