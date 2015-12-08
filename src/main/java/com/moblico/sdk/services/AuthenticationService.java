@@ -2,6 +2,7 @@ package com.moblico.sdk.services;
 
 import com.facebook.AccessToken;
 import com.moblico.sdk.entities.AuthenticationToken;
+import com.moblico.sdk.entities.Status;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,6 +60,20 @@ public final class AuthenticationService {
 
             @Override
             public void onFailure(Throwable caught) {
+                if (caught instanceof StatusCodeException) {
+                    StatusCodeException ex = (StatusCodeException) caught;
+                    if (ex.getStatus() != null &&
+                            (ex.getStatus().getStatusType() == Status.StatusType.PASSWORD_MISMATCH ||
+                                    ex.getStatus().getStatusType() == Status.StatusType.INVALID_USER)
+                            && Moblico.getUsername() != null) {
+                        // We had the wrong username/password.  Reset and try again.  This is needed
+                        // because we persist the username/password, and we don't want to have all
+                        // possible first startup queries to add this logic.
+                        Moblico.clearUser();
+                        authenticate(callback);
+                        return;
+                    }
+                }
                 callback.onFailure(caught);
             }
         });
