@@ -27,10 +27,10 @@ public class RegistrationService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent.getBooleanExtra(EXTRA_UNREGISTER, false)) {
-            try {
+            /*try {
                 InstanceID.getInstance(this).deleteInstanceID();
             } catch (IOException e) {
-            }
+            }*/
         } else {
             try {
                 InstanceID instanceID = InstanceID.getInstance(this);
