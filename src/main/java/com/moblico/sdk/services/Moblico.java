@@ -129,6 +129,9 @@ public final class Moblico {
 
     public static void setUser(final String username, final String password,
                                final SocialType socialType, final boolean persist) {
+        if (socialType == null) {
+            throw new IllegalArgumentException("socialType cannot be null");
+        }
         if (socialType == SocialType.FACEBOOK && persist) {
             throw new UnsupportedOperationException("Cannot persist facebook logins!");
         }
