@@ -23,6 +23,13 @@ public class Deal implements Parcelable, Comparable<Deal> {
     private final String urlName;
     private final boolean appRedemptionEnabled;
     private final String promoText;
+    private final boolean goalEnabled;
+    private final int currentGoalAmount;
+    private final int currentGoalQuantity;
+    private final int targetGoalAmount;
+    private final int targetGoalQuantity;
+    private final int totalMetGoals;
+    private final int maximumMetGoals;
 
 
     protected Deal(Parcel in) {
@@ -46,6 +53,13 @@ public class Deal implements Parcelable, Comparable<Deal> {
         urlName = in.readString();
         appRedemptionEnabled = in.readByte() != 0x00;
         promoText = in.readString();
+        goalEnabled = in.readByte() != 0x00;
+        currentGoalAmount = in.readInt();
+        currentGoalQuantity = in.readInt();
+        targetGoalAmount = in.readInt();
+        targetGoalQuantity = in.readInt();
+        totalMetGoals = in.readInt();
+        maximumMetGoals = in.readInt();
     }
 
     @Override
@@ -71,6 +85,13 @@ public class Deal implements Parcelable, Comparable<Deal> {
         dest.writeString(urlName);
         dest.writeByte((byte) (appRedemptionEnabled ? 0x01 : 0x00));
         dest.writeString(promoText);
+        dest.writeByte((byte) (goalEnabled ? 0x01 : 0x00));
+        dest.writeInt(currentGoalAmount);
+        dest.writeInt(currentGoalQuantity);
+        dest.writeInt(targetGoalAmount);
+        dest.writeInt(targetGoalQuantity);
+        dest.writeInt(totalMetGoals);
+        dest.writeInt(maximumMetGoals);
     }
 
     @SuppressWarnings("unused")
@@ -150,6 +171,34 @@ public class Deal implements Parcelable, Comparable<Deal> {
         return promoText;
     }
 
+    public boolean isGoalEnabled() {
+        return goalEnabled;
+    }
+
+    public int getCurrentGoalAmount() {
+        return currentGoalAmount;
+    }
+
+    public int getCurrentGoalQuantity() {
+        return currentGoalQuantity;
+    }
+
+    public int getTargetGoalAmount() {
+        return targetGoalAmount;
+    }
+
+    public int getTargetGoalQuantity() {
+        return targetGoalQuantity;
+    }
+
+    public int getTotalMetGoals() {
+        return totalMetGoals;
+    }
+
+    public int getMaximumMetGoals() {
+        return maximumMetGoals;
+    }
+
     @Override
     public String toString() {
         return "Deal{" +
@@ -169,6 +218,13 @@ public class Deal implements Parcelable, Comparable<Deal> {
                 ", urlName='" + urlName + '\'' +
                 ", appRedemptionEnabled=" + appRedemptionEnabled +
                 ", promoText='" + promoText + '\'' +
+                ", goalEnabled=" + goalEnabled +
+                ", currentGoalAmount=" + currentGoalAmount +
+                ", currentGoalQuantity=" + currentGoalQuantity +
+                ", targetGoalAmount=" + targetGoalAmount +
+                ", targetGoalQuantity=" + targetGoalQuantity +
+                ", totalMetGoals=" + totalMetGoals +
+                ", maximumMetGoals=" + maximumMetGoals +
                 '}';
     }
 
