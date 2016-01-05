@@ -94,7 +94,7 @@ public final class LocationsService {
         });
     }
 
-    private static android.location.Location findLocation(Context context) {
+    protected static android.location.Location findLocation(Context context) {
         LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         android.location.Location gpsLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         android.location.Location networkLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);

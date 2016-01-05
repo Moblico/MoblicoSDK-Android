@@ -1,14 +1,11 @@
 package com.moblico.sdk.services;
 
+import android.content.Context;
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.google.gson.reflect.TypeToken;
-import com.moblico.sdk.entities.Location;
-
-import java.lang.reflect.Type;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public final class MetricsService {
@@ -35,7 +32,8 @@ public final class MetricsService {
         ENTER_GEO_REGION("Enter_Geo_Region"),
         EXIT_GEO_REGION("Exit_Geo_Region"),
         ENTER_BEACON_REGION("Enter_Beacon_Region"),
-        EXIT_BEACON_REGION("Exit_Beacon_Region");
+        EXIT_BEACON_REGION("Exit_Beacon_Region"),
+        GPS_CHANGED("Change_GPS");
 
         private final String text;
         private Type(String text) {
@@ -46,7 +44,8 @@ public final class MetricsService {
     private MetricsService() {
     }
 
-    public static void send(@NonNull final Type type, @Nullable final String text, @Nullable final Callback<Void> callback) {
+    public static void send(@NonNull final Type type, @Nullable final String text,
+                            @Nullable final Context context, @Nullable final Callback<Void> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
@@ -56,6 +55,13 @@ public final class MetricsService {
                 params.put("timestamp", Long.toString(System.currentTimeMillis()));
                 if (text != null) {
                     params.put("text", text);
+                }
+                if (context != null) {
+                    Location loc = LocationsService.findLocation(context);
+                    if (loc != null) {
+                        params.put("latitude", Double.toString(loc.getLatitude()));
+                        params.put("longitude", Double.toString(loc.getLongitude()));
+                    }
                 }
                 HttpRequest.post("metrics", params, new ErrorForwardingCallback<String>(callback) {
                     @Override
