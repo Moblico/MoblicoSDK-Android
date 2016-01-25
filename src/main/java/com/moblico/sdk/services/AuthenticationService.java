@@ -64,7 +64,8 @@ public final class AuthenticationService {
                     StatusCodeException ex = (StatusCodeException) caught;
                     if (ex.getStatus() != null &&
                             (ex.getStatus().getStatusType() == Status.StatusType.PASSWORD_MISMATCH ||
-                                    ex.getStatus().getStatusType() == Status.StatusType.INVALID_USER)
+                                    ex.getStatus().getStatusType() == Status.StatusType.INVALID_USER ||
+                                    ex.getStatus().getStatusType() == Status.StatusType.INVALID_PASSWORD)
                             && Moblico.getUsername() != null) {
                         // We had the wrong username/password.  Reset and try again.  This is needed
                         // because we persist the username/password, and we don't want to have all
