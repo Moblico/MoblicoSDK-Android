@@ -18,6 +18,7 @@ public class GcmService {
     public static final String EXTRA_MESSAGE_ID = "com.moblico.private.intent.EXTRA_MESSAGE_ID";
     public static final String EXTRA_NOTIFICATION_TITLE = "com.moblico.intent.EXTRA_NOTIFICATION_TITLE";
     public static final String EXTRA_NOTIFICATION_BODY = "com.moblico.intent.EXTRA_NOTIFICATION_BODY";
+    public static final String EXTRA_NOTIFICATION_DEAL_ID = "com.moblico.intent.EXTRA_NOTIFICATION_DEAL_ID";
 
     public enum MessageStatus {
         RECEIVED, OPENED

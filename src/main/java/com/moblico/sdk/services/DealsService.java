@@ -30,6 +30,21 @@ public final class DealsService {
         });
     }
 
+    public static void getDeal(final long dealId, final Callback<Deal> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                HttpRequest.get("deals/" + dealId, null, new ErrorForwardingCallback<String>(callback) {
+                    @Override
+                    public void onSuccess(String result) {
+                        Deal deal = Moblico.getGson().fromJson(result, Deal.class);
+                        callback.onSuccess(deal);
+                    }
+                });
+            }
+        });
+    }
+
     public static void getDealsAtLocation(final Location location, final Callback<List<Deal>> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
