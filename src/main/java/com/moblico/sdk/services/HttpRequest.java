@@ -26,6 +26,18 @@ public class HttpRequest extends AsyncTask<URL, Void, String> {
         }
     }
 
+    /** Run a get request on the specified URL.  The same as {@link #get(String, Map, Callback)} but
+     * able to target a custom URL.
+     */
+    static public void get(final String urlStr, final Callback<String> callback) {
+        try {
+            final URL url = new URL(urlStr);
+            new HttpRequest(url, "GET", callback);
+        } catch (MalformedURLException e) {
+            callback.onFailure(e);
+        }
+    }
+
     static public void post(final String path, final Map<String, String> params, final Callback<String> callback) {
         try {
             final URL url = Moblico.buildUrl(path, params);
