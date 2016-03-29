@@ -89,6 +89,7 @@ public class HttpRequest extends AsyncTask<URL, Void, String> {
         try {
             urlConnection = (HttpURLConnection)url.openConnection();
             urlConnection.setRequestMethod(mRequestMethod);
+            urlConnection.setRequestProperty("Accept", "application/json");
         } catch (IOException e) {
             mThrowable = e;
             return null;
