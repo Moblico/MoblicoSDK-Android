@@ -44,7 +44,9 @@ public class ListItemsService {
                     @Override
                     public void onSuccess(String result) {
                         ListItem listItem = Moblico.getGson().fromJson(result,ListItem.class);
-                        callback.onSuccess(listItem);
+                        if (callback != null) {
+                            callback.onSuccess(listItem);
+                        }
                     }
                 });
             }
