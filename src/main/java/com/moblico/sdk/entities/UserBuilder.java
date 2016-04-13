@@ -1,10 +1,5 @@
 package com.moblico.sdk.entities;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import com.google.gson.annotations.SerializedName;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,30 +35,30 @@ public class UserBuilder {
     }
 
     public UserBuilder(User user) {
-        username = user.getUsername();
-        password = user.getPassword();
+        username = emptyToNull(user.getUsername());
+        password = emptyToNull(user.getPassword());
         optinEmail = user.isOptinEmail();
         optinPhone = user.isOptinPhone();
-        phone = user.getPhone();
-        email = user.getEmail();
-        nickName = user.getNickName();
-        locale = user.getLocale();
-        firstName = user.getFirstName();
-        lastName = user.getLastName();
-        address1 = user.getAddress1();
-        address2 = user.getAddress2();
-        city = user.getCity();
-        stateOrProvince = user.getStateOrProvince();
-        country = user.getCountry();
-        postalCode = user.getPostalCode();
-        dateOfBirth = user.getDateOfBirth();
-        age = user.getAge();
+        phone = emptyToNull(user.getPhone());
+        email = emptyToNull(user.getEmail());
+        nickName = emptyToNull(user.getNickName());
+        locale = emptyToNull(user.getLocale());
+        firstName = emptyToNull(user.getFirstName());
+        lastName = emptyToNull(user.getLastName());
+        address1 = emptyToNull(user.getAddress1());
+        address2 = emptyToNull(user.getAddress2());
+        city = emptyToNull(user.getCity());
+        stateOrProvince = emptyToNull(user.getStateOrProvince());
+        country = emptyToNull(user.getCountry());
+        postalCode = emptyToNull(user.getPostalCode());
+        dateOfBirth = emptyToNull(user.getDateOfBirth());
+        age = emptyToNull(user.getAge());
         createDate = user.getCreateDate();
         lastUpdateDate = user.getLastUpdateDate();
         contactPreference = user.getContactPreference();
         gender = user.getGender();
-        locationId = user.getLocationId();
-        externalId = user.getExternalId();
+        locationId = emptyToNull(user.getLocationId());
+        externalId = emptyToNull(user.getExternalId());
         attributes.putAll(user.getAttributes());
     }
 
@@ -288,9 +283,21 @@ public class UserBuilder {
         return this;
     }
 
+    public UserBuilder removeAttribute(String name) {
+        attributes.remove(name);
+        return this;
+    }
+
     public User build() {
         return new User(username, password, phone, email, nickName, locale, firstName, lastName, address1,
                 address2, city, stateOrProvince, country, postalCode, dateOfBirth, age, optinEmail,
                 optinPhone, contactPreference, gender, locationId, attributes);
+    }
+
+    private static String emptyToNull(String input) {
+        if (input != null && input.isEmpty()) {
+            return null;
+        }
+        return input;
     }
 }
