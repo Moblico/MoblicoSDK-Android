@@ -11,6 +11,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.moblico.sdk.entities.AuthenticationToken;
+import com.moblico.sdk.entities.User;
 
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
@@ -38,6 +39,7 @@ public final class Moblico {
     private static String sPassword;
     private static String sClientCode;
     private static SocialType sSocialType = SocialType.NONE;
+    private static User sUser;
     private static SharedPreferences sSharedPrefs;
     private static Gson sGson;
 
@@ -149,8 +151,16 @@ public final class Moblico {
             edit.apply();
         }
         sToken = null;
+        sUser = null;
     }
 
+    public static User getUser() {
+        return sUser;
+    }
+
+    protected static void setUser(User user) {
+        sUser = user;
+    }
 
     public static void clearUser() {
         setUser(null, null, SocialType.NONE, true);

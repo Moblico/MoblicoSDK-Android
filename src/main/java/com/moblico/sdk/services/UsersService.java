@@ -63,6 +63,9 @@ public class UsersService {
                     @Override
                     public void onSuccess(String result) {
                         User user = Moblico.getGson().fromJson(result, User.class);
+                        if (user.getUsername() != null && user.getUsername().equals(Moblico.getUsername())) {
+                            Moblico.setUser(user);
+                        }
                         callback.onSuccess(user);
                     }
                 });
@@ -100,7 +103,13 @@ public class UsersService {
                 HttpRequest.put("users/" + Uri.encode(username), params, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
-                        callback.onSuccess(null);
+                        // Call getUser() here so Moblico.getUser() has updated information.
+                        getUser(user.getUsername(), new ErrorForwardingCallback<User>(callback) {
+                            @Override
+                            public void onSuccess(User result) {
+                                callback.onSuccess(null);
+                            }
+                        });
                     }
                 });
             }
