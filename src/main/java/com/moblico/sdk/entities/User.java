@@ -51,7 +51,7 @@ public class User implements Parcelable {
     private final GenderType gender;
     private final String locationId;
     private final String externalId;
-    private final String merchantId;
+    private final long merchantId;
     private final Map<String, String> attributes;
 
     public User(String username, String password, String phone, String email, String nickName,
@@ -82,7 +82,7 @@ public class User implements Parcelable {
         this.gender = gender;
         this.locationId = locationId;
         this.externalId = null;
-        this.merchantId = null;
+        this.merchantId = 0;
         this.createDate = null;
         this.lastUpdateDate = null;
         this.attributes = new HashMap<>();
@@ -118,7 +118,7 @@ public class User implements Parcelable {
         gender = (GenderType) in.readValue(GenderType.class.getClassLoader());
         locationId = in.readString();
         externalId = in.readString();
-        merchantId = in.readString();
+        merchantId = in.readLong();
         // TODO: move this pattern to a base class if it is used much
         final int size = in.readInt();
         attributes = new HashMap<String, String>(size);
@@ -160,7 +160,7 @@ public class User implements Parcelable {
         dest.writeValue(gender);
         dest.writeString(locationId);
         dest.writeString(externalId);
-        dest.writeString(merchantId);
+        dest.writeLong(merchantId);
         dest.writeInt(attributes.size());
         for(Map.Entry<String,String> entry : attributes.entrySet()){
             dest.writeString(entry.getKey());
@@ -279,7 +279,7 @@ public class User implements Parcelable {
         return externalId;
     }
 
-    public String getMerchantId() {
+    public long getMerchantId() {
         return merchantId;
     }
 
