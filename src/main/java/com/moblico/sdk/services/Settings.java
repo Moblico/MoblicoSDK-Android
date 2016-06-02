@@ -12,14 +12,29 @@ import java.util.Map;
 
 public class Settings {
     private static final String SHARED_PREFS_KEY = "MOBLICO_SETTINGS_JSON";
+    private static final String OVERRIDDEN_SHARED_PREFS_KEY = "MOBLICO_SETTINGS_OVERRIDDEN";
 
-    private final Map<String, String> mSettings = new HashMap<String, String>();
+    private final Map<String, String> mSettings = new HashMap<>();
+    private final Map<String, String> mOverriddenSettings = new HashMap<>();
     private final SharedPreferences mSharedPrefs;
 
     Settings(final Context context) {
         mSharedPrefs = context.getSharedPreferences("MOBLICO_SETTINGS", Context.MODE_PRIVATE);
         if (mSharedPrefs.contains(SHARED_PREFS_KEY)) {
             parseJson(mSharedPrefs.getString(SHARED_PREFS_KEY, ""));
+        }
+        if (mSharedPrefs.contains(OVERRIDDEN_SHARED_PREFS_KEY)) {
+            try {
+                String storedHashMapString = mSharedPrefs.getString(OVERRIDDEN_SHARED_PREFS_KEY, "");
+                java.lang.reflect.Type type = new TypeToken<HashMap<String, String>>() {
+                }.getType();
+                Gson gson = new Gson();
+                HashMap<String, String> map = gson.fromJson(storedHashMapString, type);
+                mOverriddenSettings.clear();
+                mOverriddenSettings.putAll(map);
+            } catch (Exception e) {
+                // Ignore any errors here.
+            }
         }
     }
 
@@ -39,7 +54,20 @@ public class Settings {
         mSettings.putAll(map);
     }
 
+    public void setOverrides(Map<String, String> overrides) {
+        mOverriddenSettings.clear();
+        mOverriddenSettings.putAll(overrides);
+        Gson gson = new Gson();
+        String hashMapString = gson.toJson(mOverriddenSettings);
+        SharedPreferences.Editor editor = mSharedPrefs.edit();
+        editor.putString(OVERRIDDEN_SHARED_PREFS_KEY, hashMapString);
+        editor.apply();
+    }
+
     public String getString(final String key, final String defaultValue) {
+        if (mOverriddenSettings.containsKey(key)) {
+            return mOverriddenSettings.get(key);
+        }
         if (mSettings.containsKey(key)) {
             return mSettings.get(key);
         }
@@ -47,50 +75,54 @@ public class Settings {
     }
 
     public int getInt(final String key, final int defaultValue) {
-        if (mSettings.containsKey(key)) {
-            try {
-                return Integer.parseInt(mSettings.get(key));
-            } catch (Throwable t) {
-                return defaultValue;
-            }
+        String str = getString(key, null);
+        if (str == null) {
+            return defaultValue;
         }
-        return defaultValue;
+        try {
+            return Integer.parseInt(str);
+        } catch (Throwable t) {
+            return defaultValue;
+        }
     }
 
     public long getLong(final String key, final long defaultValue) {
-        if (mSettings.containsKey(key)) {
-            try {
-                return Long.parseLong(mSettings.get(key));
-            } catch (Throwable t) {
-                return defaultValue;
-            }
+        String str = getString(key, null);
+        if (str == null) {
+            return defaultValue;
         }
-        return defaultValue;
+        try {
+            return Long.parseLong(str);
+        } catch (Throwable t) {
+            return defaultValue;
+        }
     }
 
     public float getFloat(final String key, final float defaultValue) {
-        if (mSettings.containsKey(key)) {
-            try {
-                return Float.parseFloat(mSettings.get(key));
-            } catch (Throwable t) {
-                return defaultValue;
-            }
+        String str = getString(key, null);
+        if (str == null) {
+            return defaultValue;
         }
-        return defaultValue;
+        try {
+            return Float.parseFloat(str);
+        } catch (Throwable t) {
+            return defaultValue;
+        }
     }
 
     public boolean getBoolean(final String key, final boolean defaultValue) {
-        if (mSettings.containsKey(key)) {
-            try {
-                return Boolean.parseBoolean(mSettings.get(key));
-            } catch (Throwable t) {
-                return defaultValue;
-            }
+        String str = getString(key, null);
+        if (str == null) {
+            return defaultValue;
         }
-        return defaultValue;
+        try {
+            return Boolean.parseBoolean(str);
+        } catch (Throwable t) {
+            return defaultValue;
+        }
     }
 
     public boolean hasKey(final String key) {
-        return mSettings.containsKey(key);
+        return mSettings.containsKey(key) || mOverriddenSettings.containsKey(key);
     }
 }
