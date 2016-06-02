@@ -29,6 +29,7 @@ public final class Moblico {
     private static final String USERNAME_KEY = "MOBLICO_LOGIN_USERNAME";
     private static final String PASSWORD_KEY = "MOBLICO_LOGIN_PASSWORD";
     private static final String CLIENT_CODE_KEY = "MOBLICO_LOGIN_CLIENT_CODE";
+    private static final String USER_KEY = "MOBLICO_LOGIN_USER";
 
     private static String sApiKey;
     private static AuthenticationToken sToken;
@@ -46,7 +47,7 @@ public final class Moblico {
     static {
         GsonBuilder builder = new GsonBuilder();
         // Register an adapter to manage the date types as long values
-        final GsonBuilder gsonBuilder = builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+        builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
             public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 try {
                     return new Date(json.getAsJsonPrimitive().getAsLong());
@@ -155,11 +156,22 @@ public final class Moblico {
     }
 
     public static User getUser() {
+        if (sUser == null && sSharedPrefs.contains(USER_KEY)) {
+            sUser = getGson().fromJson(sSharedPrefs.getString(USER_KEY, ""), User.class);
+        }
         return sUser;
     }
 
     protected static void setUser(User user) {
         sUser = user;
+        SharedPreferences.Editor edit = sSharedPrefs.edit();
+        if (user != null) {
+            String userStr = getGson().toJson(user);
+            edit.putString(USER_KEY, userStr);
+        } else {
+            edit.remove(USER_KEY);
+        }
+        edit.apply();
     }
 
     public static void clearUser() {
