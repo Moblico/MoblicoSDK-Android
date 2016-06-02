@@ -26,10 +26,13 @@ public class Deal implements Parcelable, Comparable<Deal> {
     private final boolean goalEnabled;
     private final int currentGoalAmount;
     private final int currentGoalQuantity;
+    private final int currentGoalQuantity2;
     private final int targetGoalAmount;
     private final int targetGoalQuantity;
+    private final int targetGoalQuantity2;
     private final int totalMetGoals;
     private final int maximumMetGoals;
+    private final boolean wellnessEnabled;
 
 
     protected Deal(Parcel in) {
@@ -56,10 +59,13 @@ public class Deal implements Parcelable, Comparable<Deal> {
         goalEnabled = in.readByte() != 0x00;
         currentGoalAmount = in.readInt();
         currentGoalQuantity = in.readInt();
+        currentGoalQuantity2 = in.readInt();
         targetGoalAmount = in.readInt();
         targetGoalQuantity = in.readInt();
+        targetGoalQuantity2 = in.readInt();
         totalMetGoals = in.readInt();
         maximumMetGoals = in.readInt();
+        wellnessEnabled = in.readByte() != 0x00;
     }
 
     @Override
@@ -88,10 +94,13 @@ public class Deal implements Parcelable, Comparable<Deal> {
         dest.writeByte((byte) (goalEnabled ? 0x01 : 0x00));
         dest.writeInt(currentGoalAmount);
         dest.writeInt(currentGoalQuantity);
+        dest.writeInt(currentGoalQuantity2);
         dest.writeInt(targetGoalAmount);
         dest.writeInt(targetGoalQuantity);
+        dest.writeInt(targetGoalQuantity2);
         dest.writeInt(totalMetGoals);
         dest.writeInt(maximumMetGoals);
+        dest.writeByte((byte) (wellnessEnabled ? 0x01 : 0x00));
     }
 
     @SuppressWarnings("unused")
@@ -183,6 +192,10 @@ public class Deal implements Parcelable, Comparable<Deal> {
         return currentGoalQuantity;
     }
 
+    public int getCurrentGoalQuantity2() {
+        return currentGoalQuantity2;
+    }
+
     public int getTargetGoalAmount() {
         return targetGoalAmount;
     }
@@ -191,12 +204,20 @@ public class Deal implements Parcelable, Comparable<Deal> {
         return targetGoalQuantity;
     }
 
+    public int getTargetGoalQuantity2() {
+        return targetGoalQuantity2;
+    }
+
     public int getTotalMetGoals() {
         return totalMetGoals;
     }
 
     public int getMaximumMetGoals() {
         return maximumMetGoals;
+    }
+
+    public boolean isWellnessEnabled() {
+        return wellnessEnabled;
     }
 
     @Override
@@ -221,10 +242,13 @@ public class Deal implements Parcelable, Comparable<Deal> {
                 ", goalEnabled=" + goalEnabled +
                 ", currentGoalAmount=" + currentGoalAmount +
                 ", currentGoalQuantity=" + currentGoalQuantity +
+                ", currentGoalQuantity2=" + currentGoalQuantity2 +
                 ", targetGoalAmount=" + targetGoalAmount +
                 ", targetGoalQuantity=" + targetGoalQuantity +
+                ", targetGoalQuantity2=" + targetGoalQuantity2 +
                 ", totalMetGoals=" + totalMetGoals +
                 ", maximumMetGoals=" + maximumMetGoals +
+                ", wellnessEnabled=" + wellnessEnabled +
                 '}';
     }
 
