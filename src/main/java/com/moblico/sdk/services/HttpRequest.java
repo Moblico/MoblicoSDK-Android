@@ -77,6 +77,9 @@ public class HttpRequest extends AsyncTask<URL, Void, String> {
 
     @NonNull
     private String fromStream(final InputStream stream) throws IOException {
+        if (stream == null) {
+            return "Unable to open stream.";
+        }
         final char[] buffer = new char[1024];
         final StringBuilder out = new StringBuilder();
         Reader in = new InputStreamReader(stream, "UTF-8");
