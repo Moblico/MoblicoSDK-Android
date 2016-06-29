@@ -1,6 +1,7 @@
 package com.moblico.sdk.services;
 
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -11,7 +12,6 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 
 public class HttpRequest extends AsyncTask<URL, Void, String> {
@@ -72,7 +72,12 @@ public class HttpRequest extends AsyncTask<URL, Void, String> {
     private HttpRequest(final URL url, final String requestMethod, final Callback<String> callback) {
         mCallback = callback;
         mRequestMethod = requestMethod;
-        execute(url);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            // On newer devices, support sending http requests in parallel using a thread pool.
+            executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, url);
+        } else {
+            execute(url);
+        }
     }
 
     @NonNull
@@ -100,7 +105,7 @@ public class HttpRequest extends AsyncTask<URL, Void, String> {
         if(Moblico.isLogging()) {
             Log.i(TAG, "Sending " + mRequestMethod + " to " + url.toString());
         }
-        HttpURLConnection urlConnection = null;
+        HttpURLConnection urlConnection;
         try {
             urlConnection = (HttpURLConnection)url.openConnection();
             urlConnection.setRequestMethod(mRequestMethod);
