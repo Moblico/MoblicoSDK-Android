@@ -93,7 +93,13 @@ public class UsersService {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
-                Map<String, String> params = getUserParams(user);
+                Map<String, String> params = new HashMap();
+                if (Moblico.getUser() != null) {
+                    // We must send back all the existing user params to the backend.  Load them here.
+                    params.putAll(getUserParams(Moblico.getUser()));
+                }
+                // This will override any params that changed.
+                params.putAll(getUserParams(user));
                 // It never makes sense to send the username parameter.  If the username has changed,
                 // we use the 'newUsername' parameter.
                 params.remove("username");
