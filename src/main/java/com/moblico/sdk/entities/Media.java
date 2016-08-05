@@ -69,10 +69,15 @@ public class Media implements Parcelable {
         dest.writeString(imageUrl);
         dest.writeString(thumbUrl);
         dest.writeString(externalId);
-        dest.writeInt(attributes.size());
-        for(Map.Entry<String,String> entry : attributes.entrySet()){
-            dest.writeString(entry.getKey());
-            dest.writeString(entry.getValue());
+        if (attributes != null) {
+            dest.writeInt(attributes.size());
+            for (Map.Entry<String, String> entry : attributes.entrySet()) {
+                dest.writeString(entry.getKey());
+                dest.writeString(entry.getValue());
+            }
+        }
+        else {
+            dest.writeInt(0);
         }
     }
 
