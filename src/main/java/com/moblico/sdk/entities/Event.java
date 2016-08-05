@@ -92,10 +92,14 @@ public class Event implements Parcelable {
         dest.writeString(rsvpEmail);
         dest.writeString(rsvpPhone);
         dest.writeString(rsvpUrl);
-        dest.writeInt(attributes.size());
-        for(Map.Entry<String,String> entry : attributes.entrySet()){
-            dest.writeString(entry.getKey());
-            dest.writeString(entry.getValue());
+        if (attributes == null) {
+            dest.writeInt(0);
+        } else {
+            dest.writeInt(attributes.size());
+            for (Map.Entry<String, String> entry : attributes.entrySet()) {
+                dest.writeString(entry.getKey());
+                dest.writeString(entry.getValue());
+            }
         }
     }
 
@@ -185,10 +189,16 @@ public class Event implements Parcelable {
     }
 
     public boolean hasAttribute(final String attribute) {
+        if (attributes == null) {
+            return false;
+        }
         return attributes.containsKey(attribute);
     }
 
     public String getAttribute(final String attribute) {
+        if (attributes == null) {
+            return null;
+        }
         return attributes.get(attribute);
     }
 
