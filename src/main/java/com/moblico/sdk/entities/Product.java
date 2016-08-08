@@ -3,9 +3,10 @@ package com.moblico.sdk.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Product implements Parcelable {
+public class Product implements Parcelable, Serializable {
 
     private final long id;
     private final String title;

@@ -3,11 +3,12 @@ package com.moblico.sdk.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Media implements Parcelable {
+public class Media implements Parcelable, Serializable {
     private final long id;
     private final Date createDate;
     private final Date lastUpdateDate;
