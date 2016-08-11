@@ -1,6 +1,5 @@
 package com.moblico.sdk.services;
 
-import com.facebook.AccessToken;
 import com.moblico.sdk.entities.AuthenticationToken;
 import com.moblico.sdk.entities.Status;
 
@@ -9,12 +8,18 @@ import java.util.Map;
 
 public final class AuthenticationService {
 
+    private static SocialTokenHandler sSocialTokenHandler;
+
     private AuthenticationService() {
+    }
+
+    public static void setSocialTokenHandler(SocialTokenHandler tokenHandler) {
+        sSocialTokenHandler = tokenHandler;
     }
 
     /**
      * If needed, authenticate with the Moblico servers.  If we already have a valid authentication
-     * token, {@link Callback.#onSuccess} will be called immediately.  Otherwise we make a server
+     * token, {@link Callback#onSuccess} will be called immediately.  Otherwise we make a server
      * request and eventually notify the callback.  The authentication token is cached internally,
      * so no extra information is sent to the callback, just a call to onSuccess or onFailure.
      */
@@ -24,27 +29,23 @@ public final class AuthenticationService {
             return;
         }
 
-        final Map<String, String> params = new HashMap<String, String>();
+        final Map<String, String> params = new HashMap<>();
         params.put("apikey", Moblico.getApiKey());
         params.put("platformName", "ANDROID");
         if (Moblico.getUsername() != null) {
             params.put("username", Moblico.getUsername());
-            switch (Moblico.getSocialType()) {
-                case FACEBOOK:
-                    params.put("social", "FACEBOOK");
-                    if (AccessToken.getCurrentAccessToken() != null) {
-                        // The Facebook SDK says this should always exist and be up to date, if we've
-                        // already logged the user in.  If this isn't the case, things get tricky.
-                        // We need to show the user a new login activity/fragment.
-                        params.put("socialToken", AccessToken.getCurrentAccessToken().getToken());
-                    }
-                    break;
-                case NONE:
-                    params.put("password", Moblico.getPassword());
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Unknown social type: " + Moblico.getSocialType());
+
+            Moblico.SocialType socialType = Moblico.getSocialType();
+            if (socialType == Moblico.SocialType.NONE) {
+                params.put("password", Moblico.getPassword());
+            } else {
+                if (sSocialTokenHandler == null || sSocialTokenHandler.getToken(socialType) == null) {
+                    throw new UnsupportedOperationException("Unhandled social type: " + socialType);
+                }
+                params.put("social", socialType.name());
+                params.put("socialToken", sSocialTokenHandler.getToken(socialType));
             }
+
             if (Moblico.getClientCode() != null) {
                 params.put("childKeyword", Moblico.getClientCode());
             }
@@ -78,5 +79,9 @@ public final class AuthenticationService {
                 callback.onFailure(caught);
             }
         });
+    }
+
+    public interface SocialTokenHandler {
+        String getToken(Moblico.SocialType socialType);
     }
 }
