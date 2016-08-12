@@ -239,8 +239,8 @@ public class Event implements Parcelable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Event location = (Event) o;
+        Event event = (Event) o;
 
-        return id == location.id;
+        return id == event.id;
     }
 }

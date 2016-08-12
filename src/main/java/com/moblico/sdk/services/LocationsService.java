@@ -61,6 +61,22 @@ public final class LocationsService {
         });
     }
 
+    public static void findLocationsForEvent(final long eventId, final Callback<List<Location>> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                HttpRequest.get("events/" + eventId + "/locations", null, new ErrorForwardingCallback<String>(callback) {
+                    @Override
+                    public void onSuccess(String result) {
+                        Type collectionType = new TypeToken<List<Location>>() {}.getType();
+                        List<Location> locations = Moblico.getGson().fromJson(result, collectionType);
+                        callback.onSuccess(locations);
+                    }
+                });
+            }
+        });
+    }
+
     public static void getLocation(final long locationId, final Callback<Location> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
