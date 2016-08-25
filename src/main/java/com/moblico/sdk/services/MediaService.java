@@ -34,4 +34,21 @@ public class MediaService {
             }
         } );
     }
+
+    public static void getFromParent(final long parentId, final Callback<List<Media>> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                HttpRequest.get("media/" + parentId + "/media", null, new ErrorForwardingCallback<String>(callback) {
+
+                    @Override
+                    public void onSuccess(String result) {
+                        Type collectionType = new TypeToken<List<Media>>() { }.getType();
+                        List<Media> media = Moblico.getGson().fromJson(result, collectionType);
+                        callback.onSuccess(media);
+                    }
+                });
+            }
+        } );
+    }
 }
