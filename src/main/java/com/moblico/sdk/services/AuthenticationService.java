@@ -45,10 +45,10 @@ public final class AuthenticationService {
                 params.put("social", socialType.name());
                 params.put("socialToken", sSocialTokenHandler.getToken(socialType));
             }
+        }
 
-            if (Moblico.getClientCode() != null) {
-                params.put("childKeyword", Moblico.getClientCode());
-            }
+        if (Moblico.getClientCode() != null) {
+            params.put("childKeyword", Moblico.getClientCode());
         }
 
         HttpRequest.get("authenticate", params, new Callback<String>() {
