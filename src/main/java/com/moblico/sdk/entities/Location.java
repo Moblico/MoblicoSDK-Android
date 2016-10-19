@@ -25,9 +25,9 @@ public class Location implements Parcelable {
     private final String email;
     private final String postalCode;
     private final String country;
-    private final double latitude;
-    private final double longitude;
-    private final double distance;
+    private final Double latitude;
+    private final Double longitude;
+    private final Double distance;
     private final String url;
     private final String contactName;
     private final String externalId;
@@ -129,10 +129,14 @@ public class Location implements Parcelable {
         dest.writeString(beaconIdentifier);
         dest.writeByte((byte) (beaconNotificationEnabled ? 0x01 : 0x00));
         dest.writeString(beaconEnterNotificationText);
-        dest.writeInt(attributes.size());
-        for(Map.Entry<String,String> entry : attributes.entrySet()){
-            dest.writeString(entry.getKey());
-            dest.writeString(entry.getValue());
+        if (attributes != null) {
+            dest.writeInt(attributes.size());
+            for (Map.Entry<String, String> entry : attributes.entrySet()) {
+                dest.writeString(entry.getKey());
+                dest.writeString(entry.getValue());
+            }
+        } else {
+            dest.writeInt(0);
         }
     }
 
@@ -282,10 +286,16 @@ public class Location implements Parcelable {
     }
 
     public boolean hasAttribute(final String attribute) {
+        if (attributes == null) {
+            return false;
+        }
         return attributes.containsKey(attribute);
     }
 
     public String getAttribute(final String attribute) {
+        if (attributes == null) {
+            return null;
+        }
         return attributes.get(attribute);
     }
 

@@ -56,6 +56,18 @@ public final class Moblico {
                 }
             }
         });
+
+        // Workaround for Doubles with "" string or "null" string values
+        builder.registerTypeAdapter(Double.class, new JsonDeserializer<Double>() {
+            public Double deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                try {
+                    return new Double(json.getAsJsonPrimitive().getAsDouble());
+                } catch(Exception e) {
+                    return null;
+                }
+            }
+        });
+
         sGson = builder.create();
     }
 
