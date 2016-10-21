@@ -25,9 +25,9 @@ public class Location implements Parcelable {
     private final String email;
     private final String postalCode;
     private final String country;
-    private final Double latitude;
-    private final Double longitude;
-    private final Double distance;
+    private final double latitude;
+    private final double longitude;
+    private final double distance;
     private final String url;
     private final String contactName;
     private final String externalId;
