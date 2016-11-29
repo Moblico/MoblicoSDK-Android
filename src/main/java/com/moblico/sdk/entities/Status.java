@@ -130,6 +130,10 @@ public class Status {
 
     private final InternalStatus status;
 
+    public Status(StatusType type) {
+        this.status = new InternalStatus(null, type.value, null, 0, null);
+    }
+
     private Status(final InternalStatus status) {
         this.status = status;
     }

@@ -1,8 +1,11 @@
 package com.moblico.sdk.services;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.moblico.sdk.entities.Deal;
 import com.moblico.sdk.entities.Location;
+import com.moblico.sdk.entities.Status;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -73,6 +76,32 @@ public final class DealsService {
                         if (callback != null) {
                             callback.onSuccess(null);
                         }
+                    }
+                });
+            }
+        });
+    }
+
+    public static void getDealMessage(final Deal deal, final Callback<String> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                Map<String, String> params = new HashMap<>();
+                params.put("type", "SHARE");
+                HttpRequest.get("deals/" + deal.getId() + "/message", params, new ErrorForwardingCallback<String>(callback) {
+                    @Override
+                    public void onSuccess(String result) {
+                        JsonObject jobj = Moblico.getGson().fromJson(result, JsonObject.class);
+                        if (!jobj.has("text")) {
+                            callback.onFailure(new StatusCodeException(new Status(Status.StatusType.UNSUPPORTED_MESSAGE_TYPE)));
+                            return;
+                        }
+                        final String text = jobj.get("text").getAsString();
+                        if (text.trim().isEmpty()) {
+                            callback.onFailure(new StatusCodeException(new Status(Status.StatusType.UNSUPPORTED_MESSAGE_TYPE)));
+                            return;
+                        }
+                        callback.onSuccess(text);
                     }
                 });
             }
