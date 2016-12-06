@@ -25,8 +25,8 @@ public class Location implements Parcelable {
     private final String email;
     private final String postalCode;
     private final String country;
-    private final double latitude;
-    private final double longitude;
+    private final Double latitude;
+    private final Double longitude;
     private final double distance;
     private final String url;
     private final String contactName;
@@ -63,8 +63,8 @@ public class Location implements Parcelable {
         email = in.readString();
         postalCode = in.readString();
         country = in.readString();
-        latitude = in.readDouble();
-        longitude = in.readDouble();
+        latitude = in.readByte() == 0x00 ? null : in.readDouble();
+        longitude = in.readByte() == 0x00 ? null : in.readDouble();
         distance = in.readDouble();
         url = in.readString();
         contactName = in.readString();
@@ -113,8 +113,18 @@ public class Location implements Parcelable {
         dest.writeString(email);
         dest.writeString(postalCode);
         dest.writeString(country);
-        dest.writeDouble(latitude);
-        dest.writeDouble(longitude);
+        if (latitude == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeDouble(latitude);
+        }
+        if (longitude == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeDouble(longitude);
+        }
         dest.writeDouble(distance);
         dest.writeString(url);
         dest.writeString(contactName);
@@ -222,11 +232,11 @@ public class Location implements Parcelable {
     }
 
     public double getLatitude() {
-        return latitude;
+        return latitude == null ? 0 : latitude;
     }
 
     public double getLongitude() {
-        return longitude;
+        return longitude == null ? 0 : longitude;
     }
 
     public double getDistance() {
