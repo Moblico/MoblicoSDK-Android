@@ -32,4 +32,20 @@ public final class EventsService {
         });
     }
 
+    public static void getEvents(final Location location, final Callback<List<Event>> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                HttpRequest.get("locations/" + location.getId() + "/events", null, new ErrorForwardingCallback<String>(callback) {
+                    @Override
+                    public void onSuccess(String result) {
+                        Type collectionType = new TypeToken<List<Event>>() {}.getType();
+                        List<Event> events = Moblico.getGson().fromJson(result, collectionType);
+                        callback.onSuccess(events);
+                    }
+                });
+            }
+        });
+    }
+
 }
