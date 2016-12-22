@@ -188,11 +188,12 @@ public final class Moblico {
 
     public static void clearUser() {
         setUser(null, null, SocialType.NONE, true);
+        setClientCode(null);
     }
 
     public static void setClientCode(final String clientCode) {
         sClientCode = clientCode;
-        if(sSharedPrefs.contains(USERNAME_KEY)) {
+        if(sSharedPrefs.contains(USERNAME_KEY) || sSharedPrefs.contains(CLIENT_CODE_KEY)) {
             SharedPreferences.Editor edit = sSharedPrefs.edit();
             edit.putString(CLIENT_CODE_KEY, clientCode);
             edit.apply();
