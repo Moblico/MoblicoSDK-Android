@@ -94,12 +94,20 @@ public class UsersService {
             @Override
             public void onSuccess(Void result) {
                 Map<String, String> params = new HashMap();
+                Map<String, String> existingParams = new HashMap();
                 if (Moblico.getUser() != null) {
-                    // We must send back all the existing user params to the backend.  Load them here.
-                    params.putAll(getUserParams(Moblico.getUser()));
+                    // Load all existing user params here.  We will subtract these values from the
+                    // updated values to only send the values that have changed.
+                    existingParams.putAll(getUserParams(Moblico.getUser()));
                 }
-                // This will override any params that changed.
-                params.putAll(getUserParams(user));
+                // Load the params for the updated user and compare them
+                for (Map.Entry<String, String> entry : getUserParams(user).entrySet()) {
+                    if (!existingParams.containsKey(entry.getKey()) ||
+                            !existingParams.get(entry.getKey()).equals(entry.getValue())) {
+                        // This param is either new or changed.  Send it to the server.
+                        params.put(entry.getKey(), entry.getValue());
+                    }
+                }
                 // It never makes sense to send the username parameter.  If the username has changed,
                 // we use the 'newUsername' parameter.
                 params.remove("username");
