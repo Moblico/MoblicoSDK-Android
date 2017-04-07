@@ -21,9 +21,18 @@ public final class LocationsService {
      * Find locations.  To return a distance to the user, and sort the locations by distance,
      * include the context parameter.  If distance isn't important, context can be null.
      */
-    public static void findLocations(final Context context, final Callback<List<Location>> callback) {
+    public static void findLocations(final Context context, final boolean currentLocationRequired, final Callback<List<Location>> callback) {
+        if (context == null && currentLocationRequired) {
+            callback.onFailure(new RuntimeException("Cannot determine current location."));
+            return;
+        }
+
         if (context != null) {
             android.location.Location location = findLocation(context);
+            if (location == null && currentLocationRequired) {
+                callback.onFailure(new RuntimeException("Cannot determine current location."));
+                return;
+            }
             if (location != null) {
                 findLocations(callback, "latitude", Double.toString(location.getLatitude()),
                         "longitude", Double.toString(location.getLongitude()));
@@ -31,6 +40,13 @@ public final class LocationsService {
             }
         }
         findLocations(callback);
+    }
+    /**
+     * Find locations.  To return a distance to the user, and sort the locations by distance,
+     * include the context parameter.  If distance isn't important, context can be null.
+     */
+    public static void findLocations(final Context context, final Callback<List<Location>> callback) {
+        findLocations(context, false, callback);
     }
 
     public static void findLocationsByZip(final @NonNull String zipcode, final Callback<List<Location>> callback) {
