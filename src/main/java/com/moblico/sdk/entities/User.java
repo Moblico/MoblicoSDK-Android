@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,6 +54,8 @@ public class User implements Parcelable {
     private final String externalId;
     private final long merchantId;
     private final Map<String, String> attributes;
+
+    private transient Map<String, String> params = null;
 
     public User(String username, String password, String phone, String email, String nickName,
                 String locale, String firstName, String lastName, String address1, String address2,
@@ -315,5 +318,39 @@ public class User implements Parcelable {
                 ", merchantId=" + merchantId +
                 ", attributes=" + attributes +
                 '}';
+    }
+
+    public Map<String, String> getParams() {
+        if (params != null) {
+            // A user doesn't change.  Lazily-load this map.
+            return params;
+        }
+
+        // Use reflection to convert all the fields in User to <K:V> pairs.  This way, when
+        // a field is added to user, we get it for free.  There might be easier ways to do
+        // this with existing libraries...
+        params = new HashMap<String, String>();
+        params.putAll(getAttributes());
+        for(Field field : User.class.getDeclaredFields()) {
+            field.setAccessible(true);
+            try {
+                if (field.getType().equals(boolean.class)) {
+                    params.put(field.getName(), field.getBoolean(this) ? "YES" : "NO");
+                } else if (field.getName().equals("attributes")) {
+                    // Skip attributes!  They were already added above.
+                } else if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+                    // Skip static fields!
+                } else if (java.lang.reflect.Modifier.isTransient(field.getModifiers())) {
+                    // Skip transient fields!
+                } else {
+                    Object value = field.get(this);
+                    if (value != null) {
+                        params.put(field.getName(), value.toString());
+                    }
+                }
+            } catch (IllegalAccessException e) {
+            }
+        }
+        return params;
     }
 }

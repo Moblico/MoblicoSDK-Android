@@ -6,7 +6,6 @@ import android.net.Uri;
 import com.moblico.sdk.entities.Status;
 import com.moblico.sdk.entities.User;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,7 +76,7 @@ public class UsersService {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
-                Map<String, String> params = getUserParams(user);
+                Map<String, String> params = user.getParams();
                 HttpRequest.post("users", params, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
@@ -98,10 +97,10 @@ public class UsersService {
                 if (Moblico.getUser() != null) {
                     // Load all existing user params here.  We will subtract these values from the
                     // updated values to only send the values that have changed.
-                    existingParams.putAll(getUserParams(Moblico.getUser()));
+                    existingParams.putAll(Moblico.getUser().getParams());
                 }
                 // Load the params for the updated user and compare them
-                for (Map.Entry<String, String> entry : getUserParams(user).entrySet()) {
+                for (Map.Entry<String, String> entry : user.getParams().entrySet()) {
                     if (!existingParams.containsKey(entry.getKey()) ||
                             !existingParams.get(entry.getKey()).equals(entry.getValue())) {
                         // This param is either new or changed.  Send it to the server.
@@ -132,32 +131,5 @@ public class UsersService {
 
     public static String getAnonymousUserId(final Context context) {
         return "Anonymous." + InstallationID.id(context);
-    }
-
-    private static Map<String, String> getUserParams(final User user) {
-        // Use reflection to convert all the fields in User to <K:V> pairs.  This way, when
-        // a field is added to user, we get it for free.  There might be easier ways to do
-        // this with existing libraries...
-        Map<String, String> params = new HashMap<String, String>();
-        params.putAll(user.getAttributes());
-        for(Field field : User.class.getDeclaredFields()) {
-            field.setAccessible(true);
-            try {
-                if (field.getType().equals(boolean.class)) {
-                    params.put(field.getName(), field.getBoolean(user) ? "YES" : "NO");
-                } else if (field.getName().equals("attributes")) {
-                    // Skip attributes!  They were already added above.
-                } else if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
-                    // Skip static fields!
-                } else {
-                    Object value = field.get(user);
-                    if (value != null) {
-                        params.put(field.getName(), value.toString());
-                    }
-                }
-            } catch (IllegalAccessException e) {
-            }
-        }
-        return params;
     }
 }
