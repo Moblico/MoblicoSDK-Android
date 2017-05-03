@@ -18,6 +18,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 public final class Moblico {
 
@@ -33,6 +35,7 @@ public final class Moblico {
 
     private static String sApiKey;
     private static AuthenticationToken sToken;
+    private static Observable sTokenObservers = new Observable();
     private static Settings sSettings;
     private static boolean sLogging;
     private static boolean sTesting;
@@ -96,9 +99,14 @@ public final class Moblico {
         return new URL(b.build().toString());
     }
 
+    public static void addTokenObserver(Observer observer) {
+        sTokenObservers.addObserver(observer);
+    }
+
     static void setToken(final AuthenticationToken token) {
         // TODO: persist this?
         Moblico.sToken = token;
+        sTokenObservers.notifyObservers(token);
     }
 
     static String getApiKey() {
