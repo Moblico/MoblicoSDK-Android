@@ -83,6 +83,7 @@ public final class RewardsService {
             public void onSuccess(Void result) {
                 Map<String, String> params = new HashMap<>();
                 params.put("offerCode", reward.getOfferCode());
+                params.put("autoPurchase", "true");
                 HttpRequest.put("rewards/" + reward.getId() + "/redeem", params, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
