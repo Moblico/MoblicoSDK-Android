@@ -10,6 +10,9 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.moblico.sdk.entities.AuthenticationToken;
 import com.moblico.sdk.entities.User;
 
@@ -32,6 +35,7 @@ public final class Moblico {
     private static final String PASSWORD_KEY = "MOBLICO_LOGIN_PASSWORD";
     private static final String CLIENT_CODE_KEY = "MOBLICO_LOGIN_CLIENT_CODE";
     private static final String USER_KEY = "MOBLICO_LOGIN_USER";
+    private static final String TOKEN_KEY = "MOBLICO_LOGIN_TOKEN";
 
     private static String sApiKey;
     private static AuthenticationToken sToken;
@@ -57,6 +61,13 @@ public final class Moblico {
                 } catch(Exception e) {
                     return null;
                 }
+            }
+        });
+
+        builder.registerTypeAdapter(Date.class, new JsonSerializer<Date>() {
+            @Override
+            public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
+                return new JsonPrimitive(src.getTime());
             }
         });
 
@@ -104,9 +115,17 @@ public final class Moblico {
     }
 
     static void setToken(final AuthenticationToken token) {
-        // TODO: persist this?
         Moblico.sToken = token;
         sTokenObservers.notifyObservers(token);
+
+        SharedPreferences.Editor edit = sSharedPrefs.edit();
+        if (token != null) {
+            String tokenStr = getGson().toJson(token);
+            edit.putString(TOKEN_KEY, tokenStr);
+        } else {
+            edit.remove(TOKEN_KEY);
+        }
+        edit.apply();
     }
 
     static String getApiKey() {
@@ -131,6 +150,9 @@ public final class Moblico {
     }
 
     public static AuthenticationToken getToken() {
+        if (sToken == null && sSharedPrefs.contains(TOKEN_KEY)) {
+            sToken = getGson().fromJson(sSharedPrefs.getString(TOKEN_KEY, ""), AuthenticationToken.class);
+        }
         return sToken;
     }
 
@@ -161,16 +183,15 @@ public final class Moblico {
         sUsername = username;
         sPassword = password;
         sSocialType = socialType;
+        SharedPreferences.Editor edit = sSharedPrefs.edit();
         if (persist) {
-            SharedPreferences.Editor edit = sSharedPrefs.edit();
             edit.putString(USERNAME_KEY, username);
             edit.putString(PASSWORD_KEY, password);
-            edit.apply();
         } else {
-            SharedPreferences.Editor edit = sSharedPrefs.edit();
             edit.clear();
-            edit.apply();
         }
+        edit.remove(TOKEN_KEY);
+        edit.apply();
         sToken = null;
         sUser = null;
     }
@@ -197,6 +218,7 @@ public final class Moblico {
     public static void clearUser() {
         setUser(null, null, SocialType.NONE, true);
         setClientCode(null);
+        setToken(null);
     }
 
     public static void setClientCode(final String clientCode) {

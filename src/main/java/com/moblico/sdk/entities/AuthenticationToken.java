@@ -16,6 +16,9 @@ public class AuthenticationToken {
     }
 
     public boolean isValid() {
+        if( tokenExpiry == null ) {
+            return false;
+        }
         final Date now = new Date();
         return now.before(tokenExpiry);
     }
