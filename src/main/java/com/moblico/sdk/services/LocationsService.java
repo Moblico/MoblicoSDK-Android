@@ -108,12 +108,23 @@ public final class LocationsService {
         });
     }
 
-    public static void checkin(final Location location, final Callback<Void> callback) {
+    public static void checkin(final Location location, final Context context, final Callback<Void> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
                 Map<String, String> params = new HashMap<>();
                 params.put("locationId", Long.toString(location.getId()));
+                if (location.getBeaconIdentifier() != null && !location.getBeaconIdentifier().isEmpty()) {
+                    params.put("beaconIdentifier", location.getBeaconIdentifier());
+                }
+                if (context != null) {
+                    android.location.Location l = findLocation(context);
+                    if (l != null) {
+                        params.put("latitude", Double.toString(l.getLatitude()));
+                        params.put("longitude", Double.toString(l.getLongitude()));
+                        params.put("locationAccuracy", Float.toString(l.getAccuracy()));
+                    }
+                }
                 HttpRequest.post("checkIn", params, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
