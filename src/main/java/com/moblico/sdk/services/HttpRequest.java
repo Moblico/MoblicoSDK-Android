@@ -108,6 +108,11 @@ public class HttpRequest extends AsyncTask<URL, Void, String> {
         HttpURLConnection urlConnection;
         try {
             urlConnection = (HttpURLConnection)url.openConnection();
+            // Set the timeouts to 2 minutes - we've seen one case where auto checkin requests were
+            // queued up for nearly an hour, and wonder if the connections weren't timing out properly
+            // on a poor network connection.
+            urlConnection.setConnectTimeout(120 * 1000);
+            urlConnection.setReadTimeout(120 * 1000);
             urlConnection.setRequestMethod(mRequestMethod);
             urlConnection.setRequestProperty("Accept", "application/json");
         } catch (IOException e) {
