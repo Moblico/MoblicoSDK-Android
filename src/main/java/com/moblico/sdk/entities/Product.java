@@ -8,7 +8,7 @@ import android.support.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Product implements Parcelable, Serializable, Comparable {
+public class Product implements Parcelable, Serializable, Comparable<Product> {
 
     private final long id;
     private final String title;
@@ -234,10 +234,7 @@ public class Product implements Parcelable, Serializable, Comparable {
         return thisRevDate.compareTo(otherRevDate);
     }
 
-    public int compareTo(@NonNull Object o, boolean byRevDate) {
-        if (!(o instanceof Product)) {
-            throw new ClassCastException();
-        }
+    public int compareTo(@NonNull Product o, boolean byRevDate) {
         Product other = (Product) o;
 
         if (byRevDate) {
@@ -250,7 +247,7 @@ public class Product implements Parcelable, Serializable, Comparable {
     }
 
     @Override
-    public int compareTo(@NonNull Object o) {
+    public int compareTo(@NonNull Product o) {
         return compareTo(o, false);
     }
 
