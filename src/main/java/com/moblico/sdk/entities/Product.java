@@ -2,11 +2,13 @@ package com.moblico.sdk.entities;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class Product implements Parcelable, Serializable {
+public class Product implements Parcelable, Serializable, Comparable {
 
     private final long id;
     private final String title;
@@ -216,6 +218,40 @@ public class Product implements Parcelable, Serializable {
 
     public Media getMedia() {
         return media;
+    }
+
+    private int compareRevDateTo(@Nullable Date otherRevDate) {
+        Date thisRevDate = getRevDate();
+        if (thisRevDate == null && otherRevDate == null) {
+            return 0; // Same
+        }
+        if (thisRevDate == null) {
+            return -1; // This is less than other
+        }
+        if (otherRevDate == null) {
+            return 1; // This is greater than other
+        }
+        return thisRevDate.compareTo(otherRevDate);
+    }
+
+    public int compareTo(@NonNull Object o, boolean byRevDate) {
+        if (!(o instanceof Product)) {
+            throw new ClassCastException();
+        }
+        Product other = (Product) o;
+
+        if (byRevDate) {
+            int diff = compareRevDateTo(other.getRevDate());
+            return diff != 0 ? diff : getTitle().compareToIgnoreCase(other.getTitle());
+        }
+
+        int diff = getTitle().compareToIgnoreCase(other.getTitle());
+        return diff != 0 ? diff : compareRevDateTo(other.getRevDate());
+    }
+
+    @Override
+    public int compareTo(@NonNull Object o) {
+        return compareTo(o, false);
     }
 
     @Override
