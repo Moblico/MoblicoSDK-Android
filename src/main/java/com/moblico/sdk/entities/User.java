@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class User implements Parcelable {
 
-    public static enum GenderType {
+    public enum GenderType {
         @SerializedName("")
         UNDECLARED,
         @SerializedName("Male")
@@ -21,7 +21,7 @@ public class User implements Parcelable {
         FEMALE
     }
 
-    public static enum ContactPreferenceType {
+    public enum ContactPreferenceType {
         NONE,
         SMS,
         EMAIL,
@@ -38,6 +38,7 @@ public class User implements Parcelable {
     private final String locale;
     private final String firstName;
     private final String lastName;
+    private final String companyName;
     private final String address1;
     private final String address2;
     private final String city;
@@ -57,12 +58,12 @@ public class User implements Parcelable {
 
     private transient Map<String, String> params = null;
 
-    public User(String username, String password, String phone, String email, String nickName,
-                String locale, String firstName, String lastName, String address1, String address2,
-                String city, String stateOrProvince, String country, String postalCode,
-                String dateOfBirth, String age, boolean optinEmail, boolean optinPhone,
-                ContactPreferenceType contactPreference, GenderType gender, String locationId,
-                Map<String, String> attributes) {
+    User(String username, String password, String phone, String email, String nickName,
+                 String locale, String firstName, String lastName, String companyName, String address1, String address2,
+                 String city, String stateOrProvince, String country, String postalCode,
+                 String dateOfBirth, String age, boolean optinEmail, boolean optinPhone,
+                 ContactPreferenceType contactPreference, GenderType gender, String locationId,
+                 Map<String, String> attributes) {
         this.username = username;
         this.password = password;
         this.phone = phone;
@@ -71,6 +72,7 @@ public class User implements Parcelable {
         this.locale = locale;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.companyName = companyName;
         this.address1 = address1;
         this.address2 = address2;
         this.city = city;
@@ -105,6 +107,7 @@ public class User implements Parcelable {
         locale = in.readString();
         firstName = in.readString();
         lastName = in.readString();
+        companyName = in.readString();
         address1 = in.readString();
         address2 = in.readString();
         city = in.readString();
@@ -124,7 +127,7 @@ public class User implements Parcelable {
         merchantId = in.readLong();
         // TODO: move this pattern to a base class if it is used much
         final int size = in.readInt();
-        attributes = new HashMap<String, String>(size);
+        attributes = new HashMap<>(size);
         for(int i = 0; i < size; i++){
             String key = in.readString();
             String value = in.readString();
@@ -149,6 +152,7 @@ public class User implements Parcelable {
         dest.writeString(locale);
         dest.writeString(firstName);
         dest.writeString(lastName);
+        dest.writeString(companyName);
         dest.writeString(address1);
         dest.writeString(address2);
         dest.writeString(city);
@@ -183,8 +187,6 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
-
-
 
     public String getUsername() {
         return username;
@@ -224,6 +226,10 @@ public class User implements Parcelable {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public String getCompanyName() {
+        return companyName;
     }
 
     public String getAddress1() {
@@ -302,6 +308,7 @@ public class User implements Parcelable {
                 ", locale='" + locale + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", companyName='" + companyName + '\'' +
                 ", address1='" + address1 + '\'' +
                 ", address2='" + address2 + '\'' +
                 ", city='" + city + '\'' +
@@ -329,26 +336,27 @@ public class User implements Parcelable {
         // Use reflection to convert all the fields in User to <K:V> pairs.  This way, when
         // a field is added to user, we get it for free.  There might be easier ways to do
         // this with existing libraries...
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
         params.putAll(getAttributes());
         for(Field field : User.class.getDeclaredFields()) {
             field.setAccessible(true);
             try {
-                if (field.getType().equals(boolean.class)) {
-                    params.put(field.getName(), field.getBoolean(this) ? "YES" : "NO");
-                } else if (field.getName().equals("attributes")) {
-                    // Skip attributes!  They were already added above.
-                } else if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
-                    // Skip static fields!
-                } else if (java.lang.reflect.Modifier.isTransient(field.getModifiers())) {
-                    // Skip transient fields!
-                } else {
-                    Object value = field.get(this);
-                    if (value != null) {
-                        params.put(field.getName(), value.toString());
-                    }
+                if (field.getName().equals("attributes") // Skip attributes!  They were already added above.
+                        || java.lang.reflect.Modifier.isStatic(field.getModifiers()) // Skip static fields!
+                        || java.lang.reflect.Modifier.isTransient(field.getModifiers()) // Skip transient fields!
+                        ) {
+                    continue;
                 }
-            } catch (IllegalAccessException e) {
+
+                Object value = field.get(this);
+                if (field.getType().equals(boolean.class)) {
+                    value = field.getBoolean(this) ? "YES" : "NO";
+                }
+
+                if (value != null) {
+                    params.put(field.getName(), value.toString());
+                }
+            } catch (IllegalAccessException ignored) {
             }
         }
         return params;
