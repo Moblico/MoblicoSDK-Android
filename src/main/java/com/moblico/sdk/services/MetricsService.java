@@ -25,6 +25,7 @@ public final class MetricsService {
         VIEW_LOCATION("View_Location"),
         VIEW_EVENT("View_Event"),
         VIEW_MEDIA("View_Media"),
+        VIEW_PROMO("View_Promo"),
         SHARE_APP("Share_App"),
         SHARE_DEAL("Share_Deal"),
         SHARE_REWARD("Share_Reward"),
