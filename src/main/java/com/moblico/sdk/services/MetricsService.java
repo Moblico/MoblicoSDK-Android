@@ -20,6 +20,7 @@ public final class MetricsService {
         AD_CLICK("Ad_Click"),
         TRACKING("Tracking"),
         CUSTOM("Custom"),
+        VIEW_PROMO("View_Promo"),
         VIEW_DEAL("View_Deal"),
         VIEW_REWARD("View_Reward"),
         VIEW_LOCATION("View_Location"),
