@@ -87,7 +87,8 @@ public class Status {
         INVALID_AMOUNT(142),
         NO_MERCHANT_FOUND(143),
         PHONE_ALREADY_USED(144),
-        EMAIL_ALREADY_USED(145);
+        EMAIL_ALREADY_USED(145),
+        INSUFFICIENT_FUNDS(153);
 
         private final int value;
         private StatusType(final int value) {
