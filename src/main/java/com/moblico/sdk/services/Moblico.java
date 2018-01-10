@@ -180,6 +180,9 @@ public final class Moblico {
         if (socialType == SocialType.FACEBOOK && persist) {
             throw new UnsupportedOperationException("Cannot persist facebook logins!");
         }
+        // Clear out the cached User object
+        setUser(null);
+
         sUsername = username;
         sPassword = password;
         sSocialType = socialType;

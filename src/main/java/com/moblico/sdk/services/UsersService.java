@@ -62,7 +62,8 @@ public class UsersService {
                     @Override
                     public void onSuccess(String result) {
                         User user = Moblico.getGson().fromJson(result, User.class);
-                        if (user.getUsername() != null && user.getUsername().equals(Moblico.getUsername())) {
+                        // Moblico usernames aren't case sensitive.
+                        if (user.getUsername() != null && user.getUsername().equalsIgnoreCase(Moblico.getUsername())) {
                             Moblico.setUser(user);
                         }
                         callback.onSuccess(user);
