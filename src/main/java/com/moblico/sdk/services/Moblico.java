@@ -222,6 +222,12 @@ public final class Moblico {
         setUser(null, null, SocialType.NONE, true);
         setClientCode(null);
         setToken(null);
+
+        // Usually, after clearing the user, we call System.exit() to clear out any static variables
+        // and the like.  On some newer versions of Android, this sometimes interrupts the asynchronous
+        // storing of preferences.  So call commit() to block until we store updated preferences.
+        SharedPreferences.Editor edit = sSharedPrefs.edit();
+        edit.commit();
     }
 
     public static void setClientCode(final String clientCode) {
