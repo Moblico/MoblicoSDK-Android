@@ -77,13 +77,15 @@ public final class RewardsService {
         });
     }
 
-    public static void redeemReward(final Reward reward, final Callback<Void> callback) {
+    public static void redeemReward(final Reward reward, final boolean autoPurchase, final Callback<Void> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
                 Map<String, String> params = new HashMap<>();
                 params.put("offerCode", reward.getOfferCode());
-                params.put("autoPurchase", "true");
+                if (autoPurchase) {
+                    params.put("autoPurchase", "true");
+                }
                 HttpRequest.put("rewards/" + reward.getId() + "/redeem", params, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
