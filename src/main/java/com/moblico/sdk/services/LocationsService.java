@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.reflect.TypeToken;
 import com.moblico.sdk.entities.Location;
+import com.moblico.sdk.services.exceptions.NoLocationException;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -23,14 +24,14 @@ public final class LocationsService {
      */
     public static void findLocations(final Context context, final boolean currentLocationRequired, final Callback<List<Location>> callback) {
         if (context == null && currentLocationRequired) {
-            callback.onFailure(new RuntimeException("Cannot determine current location."));
+            callback.onFailure(new NoLocationException());
             return;
         }
 
         if (context != null) {
             android.location.Location location = findLocation(context);
             if (location == null && currentLocationRequired) {
-                callback.onFailure(new RuntimeException("Cannot determine current location."));
+                callback.onFailure(new NoLocationException());
                 return;
             }
             if (location != null) {
@@ -46,7 +47,7 @@ public final class LocationsService {
      * include the context parameter.  If distance isn't important, context can be null.
      */
     public static void findLocations(final Context context, final Callback<List<Location>> callback) {
-        findLocations(context, false, callback);
+        findLocations(context, true, callback);
     }
 
     public static void findLocationsByZip(final @NonNull String zipcode, final Callback<List<Location>> callback) {
