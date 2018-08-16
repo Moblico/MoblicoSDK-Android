@@ -1,0 +1,5 @@
+<resources>
+    <!-- Set to false to disable sending metrics.  Some apps don't want to bother with this feature
+    and disabling it can help lower load on servers -->
+    <bool name="moblico_enable_metrics">true</bool>
+</resources>

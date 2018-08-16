@@ -5,6 +5,8 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.moblico.sdk.R;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +39,7 @@ public final class MetricsService {
         GPS_CHANGED("Change_GPS");
 
         private final String text;
-        private Type(String text) {
+        Type(String text) {
             this.text = text;
         }
     }
@@ -46,7 +48,14 @@ public final class MetricsService {
     }
 
     public static void send(@NonNull final Type type, @Nullable final String text,
-                            @Nullable final Context context, @Nullable final Callback<Void> callback) {
+                            @NonNull final Context context, @Nullable final Callback<Void> callback) {
+        if (context != null && !context.getResources().getBoolean(R.bool.moblico_enable_metrics)) {
+            if (callback != null) {
+                callback.onSuccess(null);
+            }
+            return;
+        }
+
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
