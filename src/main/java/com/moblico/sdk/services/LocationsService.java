@@ -1,10 +1,20 @@
 package com.moblico.sdk.services;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.telecom.Call;
 
 import com.google.gson.reflect.TypeToken;
+import com.moblico.sdk.R;
 import com.moblico.sdk.entities.Location;
 import com.moblico.sdk.services.exceptions.NoLocationException;
 
@@ -139,6 +149,13 @@ public final class LocationsService {
     }
 
     protected static android.location.Location findLocation(Context context) {
+        if (!haveLocationPermission(context)) {
+            // We aren't going to get the location here, so just return null.
+            // Ideally we'd get notified that the user has accepted the request, but this is unfortunately
+            // done through an activity callback.  We don't have access to any activity callbacks from
+            // here, so we will just try later if needed.
+            return null;
+        }
         LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         android.location.Location gpsLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         android.location.Location networkLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -152,5 +169,47 @@ public final class LocationsService {
         } else {
             return gpsLocation;
         }
+    }
+
+    public static boolean haveLocationPermission(Context context) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            if (!(context instanceof Activity)) {
+                // There isn't a good way to request a permission from outside of an activity.  We
+                // could show a notification to the user and then request the permission when they
+                // open the notification, but that is ugly at best.  For now, let's just assume they
+                // didn't give us the permission.
+                return false;
+            }
+            final Activity activity = (Activity)context;
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                ApplicationInfo applicationInfo = context.getApplicationInfo();
+                int stringId = applicationInfo.labelRes;
+                String appName = stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : context.getString(stringId);
+                new AlertDialog.Builder(activity)
+                        .setTitle("Location Permission Needed")
+                        .setMessage(appName + " uses your location to find relevant points of interest near you!")
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                requestLocationPermissions(activity);
+                            }
+                        })
+                        .show();
+            } else {
+                requestLocationPermissions(activity);
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private static void requestLocationPermissions(Activity activity) {
+        ActivityCompat.requestPermissions(activity,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION},
+                0);
     }
 }
