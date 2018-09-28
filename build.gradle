@@ -6,11 +6,10 @@ repositories {
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "25"
 
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 26
+        targetSdkVersion 24
     }
     buildTypes {
         release {
