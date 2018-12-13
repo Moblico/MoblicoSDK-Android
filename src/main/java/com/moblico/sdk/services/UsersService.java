@@ -3,6 +3,7 @@ package com.moblico.sdk.services;
 import android.content.Context;
 import android.net.Uri;
 
+import com.google.gson.JsonObject;
 import com.moblico.sdk.entities.Status;
 import com.moblico.sdk.entities.User;
 
@@ -67,6 +68,26 @@ public class UsersService {
                             Moblico.setUser(user);
                         }
                         callback.onSuccess(user);
+                    }
+                });
+            }
+        });
+    }
+
+    public static void lookupUser(final String email, final Callback<String> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("email", email);
+                params.put("lookup", "true");
+                HttpRequest.get("users/exists", params, new ErrorForwardingCallback<String>(callback) {
+
+                    @Override
+                    public void onSuccess(String result) {
+                        JsonObject jobj = Moblico.getGson().fromJson(result, JsonObject.class);
+                        final String username = jobj.get("username").getAsString();
+                        callback.onSuccess(username);
                     }
                 });
             }
