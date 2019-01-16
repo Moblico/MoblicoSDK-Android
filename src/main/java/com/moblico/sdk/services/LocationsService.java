@@ -1,6 +1,7 @@
 package com.moblico.sdk.services;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -11,10 +12,8 @@ import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.telecom.Call;
 
 import com.google.gson.reflect.TypeToken;
-import com.moblico.sdk.R;
 import com.moblico.sdk.entities.Location;
 import com.moblico.sdk.services.exceptions.NoLocationException;
 
@@ -32,7 +31,8 @@ public final class LocationsService {
      * Find locations.  To return a distance to the user, and sort the locations by distance,
      * include the context parameter.  If distance isn't important, context can be null.
      */
-    public static void findLocations(final Context context, final boolean currentLocationRequired, final Callback<List<Location>> callback) {
+    public static void findLocations(final Context context, final boolean currentLocationRequired,
+                                     final Map<String, String> parameters, final Callback<List<Location>> callback) {
         if (context == null && currentLocationRequired) {
             callback.onFailure(new NoLocationException());
             return;
@@ -45,19 +45,21 @@ public final class LocationsService {
                 return;
             }
             if (location != null) {
-                findLocations(callback, "latitude", Double.toString(location.getLatitude()),
-                        "longitude", Double.toString(location.getLongitude()));
+                parameters.put("latitude", Double.toString(location.getLatitude()));
+                parameters.put("longitude", Double.toString(location.getLongitude()));
+                findLocations(parameters, callback);
                 return;
             }
         }
         findLocations(callback);
     }
+
     /**
      * Find locations.  To return a distance to the user, and sort the locations by distance,
      * include the context parameter.  If distance isn't important, context can be null.
      */
     public static void findLocations(final Context context, final Callback<List<Location>> callback) {
-        findLocations(context, true, callback);
+        findLocations(context, true, new HashMap<String, String>(), callback);
     }
 
     public static void findLocationsByZip(final @NonNull String zipcode, final Callback<List<Location>> callback) {
@@ -69,14 +71,18 @@ public final class LocationsService {
             // The parameter length is odd, we must have an even number for key:value pairs!
             throw new IllegalArgumentException("An even number of parameters is required");
         }
+        Map<String, String> params = new HashMap<>();
+        for (int i = 0; i < parameters.length; i+=2) {
+            params.put(parameters[i], parameters[i+1]);
+        }
+        findLocations(params, callback);
+    }
+
+    public static void findLocations(final Map<String, String> parameters, final Callback<List<Location>> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
-                Map<String, String> params = new HashMap<>();
-                for (int i = 0; i < parameters.length; i+=2) {
-                    params.put(parameters[i], parameters[i+1]);
-                }
-                HttpRequest.get("locations", params, new ErrorForwardingCallback<String>(callback) {
+                HttpRequest.get("locations", parameters, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
                         Type collectionType = new TypeToken<List<Location>>() {}.getType();
@@ -148,6 +154,7 @@ public final class LocationsService {
         });
     }
 
+    @SuppressLint("MissingPermission")
     protected static android.location.Location findLocation(Context context) {
         if (!haveLocationPermission(context)) {
             // We aren't going to get the location here, so just return null.
