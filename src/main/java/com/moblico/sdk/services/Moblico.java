@@ -104,7 +104,7 @@ public final class Moblico {
                 b.appendQueryParameter(key, params.get(key));
             }
         }
-        if(sToken != null && sToken.isValid()) {
+        if(sToken != null && sToken.isValid() && (params == null || !params.containsKey("token"))) {
             b.appendQueryParameter("token", sToken.getToken());
         }
         return new URL(b.build().toString());
@@ -182,6 +182,7 @@ public final class Moblico {
         }
         // Clear out the cached User object
         setUser(null);
+        setToken(null);
 
         sUsername = username;
         sPassword = password;
@@ -195,8 +196,6 @@ public final class Moblico {
         }
         edit.remove(TOKEN_KEY);
         edit.apply();
-        sToken = null;
-        sUser = null;
     }
 
     public static User getUser() {
