@@ -151,7 +151,29 @@ public class UsersService {
         });
     }
 
+    public static void deleteUser(final String username, final String usersToken, final Callback<Void> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                Map<String, String> params = new HashMap<>();
+                params.put("token", usersToken);
+                HttpRequest.delete("users/" + Uri.encode(username), params, new ErrorForwardingCallback<String>(callback) {
+                    @Override
+                    public void onSuccess(String result) {
+                        if (callback != null) {
+                            callback.onSuccess(null);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
     public static String getAnonymousUserId(final Context context) {
         return "Anonymous." + InstallationID.id(context);
+    }
+
+    public static boolean isUserAnonymous(final Context context) {
+        return Moblico.getUsername().equals(getAnonymousUserId(context));
     }
 }
