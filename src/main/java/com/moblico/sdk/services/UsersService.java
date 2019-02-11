@@ -19,7 +19,7 @@ public class UsersService {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
-                Map<String, String> params = new HashMap<String, String>();
+                Map<String, String> params = new HashMap<>();
                 params.put("username", username);
                 HttpRequest.get("users/exists", params, new ErrorForwardingCallback<String>(callback) {
 
@@ -78,7 +78,7 @@ public class UsersService {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
-                Map<String, String> params = new HashMap<String, String>();
+                Map<String, String> params = new HashMap<>();
                 params.put("email", email);
                 params.put("lookup", "true");
                 HttpRequest.get("users/exists", params, new ErrorForwardingCallback<String>(callback) {
@@ -114,8 +114,8 @@ public class UsersService {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
-                Map<String, String> params = new HashMap();
-                Map<String, String> existingParams = new HashMap();
+                Map<String, String> params = new HashMap<>();
+                Map<String, String> existingParams = new HashMap<>();
                 if (Moblico.getUser() != null) {
                     // Load all existing user params here.  We will subtract these values from the
                     // updated values to only send the values that have changed.
