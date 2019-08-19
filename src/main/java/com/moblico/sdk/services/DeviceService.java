@@ -2,7 +2,7 @@ package com.moblico.sdk.services;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 
 import java.util.HashMap;

@@ -1,6 +1,6 @@
 package com.moblico.sdk.services;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.google.gson.reflect.TypeToken;
 import com.moblico.sdk.entities.Ad;

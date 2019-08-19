@@ -1,7 +1,7 @@
 package com.moblico.sdk.services;
 
 import android.net.Uri;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.google.gson.reflect.TypeToken;
 import com.moblico.sdk.entities.Group;
