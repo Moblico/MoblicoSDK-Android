@@ -67,7 +67,9 @@ public class UsersService {
                         if (user.getUsername() != null && user.getUsername().equalsIgnoreCase(Moblico.getUsername())) {
                             Moblico.setUser(user);
                         }
-                        callback.onSuccess(user);
+                        if (callback != null) {
+                            callback.onSuccess(user);
+                        }
                     }
                 });
             }
