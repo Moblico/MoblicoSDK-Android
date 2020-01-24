@@ -176,6 +176,10 @@ public class UsersService {
     }
 
     public static boolean isUserAnonymous(final Context context) {
-        return Moblico.getUsername().equals(getAnonymousUserId(context));
+        String username = Moblico.getUsername();
+        if (username == null) {
+            return false;
+        }
+        return username.equals(getAnonymousUserId(context));
     }
 }
