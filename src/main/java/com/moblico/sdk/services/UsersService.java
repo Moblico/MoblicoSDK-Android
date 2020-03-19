@@ -4,10 +4,15 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import com.moblico.sdk.entities.Group;
 import com.moblico.sdk.entities.Status;
 import com.moblico.sdk.entities.User;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class UsersService {
@@ -165,6 +170,22 @@ public class UsersService {
                         if (callback != null) {
                             callback.onSuccess(null);
                         }
+                    }
+                });
+            }
+        });
+    }
+
+    public static void getUsersGroups(final Callback<List<Group>> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                HttpRequest.get("users/" + Uri.encode(Moblico.getUsername()) + "/groups", null, new ErrorForwardingCallback<String>(callback) {
+                    @Override
+                    public void onSuccess(String result) {
+                        Type collectionType = new TypeToken<List<Group>>() {}.getType();
+                        List<Group> groups = Moblico.getGson().fromJson(result, collectionType);
+                        callback.onSuccess(groups);
                     }
                 });
             }
