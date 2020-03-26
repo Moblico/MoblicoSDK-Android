@@ -39,7 +39,7 @@ public final class Moblico {
 
     private static String sApiKey;
     private static AuthenticationToken sToken;
-    private static Observable sTokenObservers = new Observable();
+    private static TokenObservable sTokenObservers = new TokenObservable();
     private static Settings sSettings;
     private static boolean sLogging;
     private static boolean sTesting;
@@ -58,7 +58,7 @@ public final class Moblico {
             public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 try {
                     return new Date(json.getAsJsonPrimitive().getAsLong());
-                } catch(Exception e) {
+                } catch (Exception e) {
                     return null;
                 }
             }
@@ -76,7 +76,7 @@ public final class Moblico {
             public Double deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 try {
                     return new Double(json.getAsJsonPrimitive().getAsDouble());
-                } catch(Exception e) {
+                } catch (Exception e) {
                     return null;
                 }
             }
@@ -91,7 +91,7 @@ public final class Moblico {
     static URL buildUrl(final String path, Map<String, String> params) throws MalformedURLException {
         Uri.Builder b = new Uri.Builder();
         b.scheme("https");
-        if(sTesting) {
+        if (sTesting) {
             b.authority("moblicosandbox.com");
         } else {
             b.authority("moblico.net");
@@ -99,12 +99,12 @@ public final class Moblico {
         b.appendPath("services");
         b.appendPath("v4");
         b.appendEncodedPath(path);
-        if(params != null) {
-            for(String key : params.keySet()) {
+        if (params != null) {
+            for (String key : params.keySet()) {
                 b.appendQueryParameter(key, params.get(key));
             }
         }
-        if(sToken != null && sToken.isValid() && (params == null || !params.containsKey("token"))) {
+        if (sToken != null && sToken.isValid() && (params == null || !params.containsKey("token"))) {
             b.appendQueryParameter("token", sToken.getToken());
         }
         return new URL(b.build().toString());
@@ -115,6 +115,7 @@ public final class Moblico {
     }
 
     static void setToken(final AuthenticationToken token) {
+        sTokenObservers.willChangeToken(Moblico.sToken, token);
         Moblico.sToken = token;
         sTokenObservers.notifyObservers(token);
 
@@ -139,7 +140,7 @@ public final class Moblico {
     }
 
     public static Settings getSettings() {
-        if(sSettings == null) {
+        if (sSettings == null) {
             throw new IllegalStateException("Cannot get settings until setApiKey() has been called.");
         }
         return sSettings;
@@ -238,21 +239,21 @@ public final class Moblico {
     }
 
     public static String getUsername() {
-        if(sUsername == null) {
+        if (sUsername == null) {
             sUsername = sSharedPrefs.getString(USERNAME_KEY, null);
         }
         return sUsername;
     }
 
     public static String getPassword() {
-        if(sPassword == null) {
+        if (sPassword == null) {
             sPassword = sSharedPrefs.getString(PASSWORD_KEY, null);
         }
         return sPassword;
     }
 
     public static String getClientCode() {
-        if(sClientCode == null) {
+        if (sClientCode == null) {
             sClientCode = sSharedPrefs.getString(CLIENT_CODE_KEY, null);
         }
         return sClientCode;
@@ -260,5 +261,17 @@ public final class Moblico {
 
     public static SocialType getSocialType() {
         return sSocialType;
+    }
+
+    private static class TokenObservable extends Observable {
+        void willChangeToken(AuthenticationToken fromToken, AuthenticationToken toToken) {
+            if (toToken == null) {
+                return;
+            }
+            String newToken = toToken.getToken();
+            if (fromToken == null || !fromToken.getToken().equals(newToken)) {
+                setChanged();
+            }
+        }
     }
 }
