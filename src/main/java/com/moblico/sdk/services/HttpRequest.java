@@ -25,9 +25,13 @@ public class HttpRequest {
     }
 
     static public void post(final String path, final Map<String, String> params, final Callback<String> callback) {
+        post(path, params, null, callback);
+    }
+
+    static public void post(final String path, final Map<String, String> params, String body, final Callback<String> callback) {
         try {
             final URL url = Moblico.buildUrl(path, params);
-            CustomHttpRequest.post(url, null, callback);
+            CustomHttpRequest.post(url, body, callback);
         } catch (MalformedURLException e) {
             callback.onFailure(e);
         }
