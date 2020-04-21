@@ -1,10 +1,12 @@
 package com.moblico.sdk.services;
 
-import android.support.annotation.Nullable;
+import android.content.Context;
+import android.util.Base64;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -15,11 +17,13 @@ public class ScanToListService {
         public final String name;
         public final int quantity;
         public final String note;
+        public final String photoPath;
 
-        public Product(String name, int quantity, String note) {
+        public Product(String name, int quantity, String note, String photoPath) {
             this.name = name;
             this.quantity = quantity;
             this.note = note;
+            this.photoPath = photoPath;
         }
 
         @Override
@@ -44,6 +48,7 @@ public class ScanToListService {
                                  final Map<String, String> customProfileFields,
                                  final Set<Product> products,
                                  final String comments,
+                                 final Context context,
                                  final Callback<String> callback) {
 
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
@@ -71,6 +76,25 @@ public class ScanToListService {
                     jsonProduct.addProperty("productId", product.name);
                     jsonProduct.addProperty("quantity", product.quantity);
                     jsonProduct.addProperty("note", product.note);
+                    if (product.photoPath != null) {
+                        // convert photo to base64.
+                        try {
+                            FileInputStream photoStream = context.openFileInput(product.photoPath);
+                            //ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            byte[] buffer = new byte[photoStream.available()];
+                            photoStream.read(buffer);
+                            //int sizeRead;
+                            //do {
+                                //sizeRead = photoStream.read(buffer);
+                                //stream.write(buffer, 0, sizeRead);
+                            //} while (sizeRead >= 0);
+                            //byte[] imageBytes = stream.toByteArray();
+                            String imageString = Base64.encodeToString(buffer, Base64.NO_WRAP);
+                            jsonProduct.addProperty("imageData", imageString);
+                        } catch (Exception e) {
+                            // Just don't attach the image
+                        }
+                    }
                     jsonProducts.add(jsonProduct);
                 }
                 obj.add("products", jsonProducts);
@@ -81,7 +105,7 @@ public class ScanToListService {
 
                 Map<String, String> params = new HashMap<>();
                 params.put("json", obj.toString());
-                HttpRequest.get("outofband/sendOrder", params, new ErrorForwardingCallback<String>(callback) {
+                HttpRequest.post("outofband/sendOrder", null, obj.toString(), new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
                         callback.onSuccess(result);
