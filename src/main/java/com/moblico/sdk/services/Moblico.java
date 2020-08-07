@@ -127,6 +127,12 @@ public final class Moblico {
             edit.remove(TOKEN_KEY);
         }
         edit.apply();
+
+        // when the token is reset, it sometimes requires user attributes to reset as well, such as when using SSO features.
+        // Refresh the user object to grab any new/updated attributes.
+        if (getUser() != null) {
+            UsersService.getUser(getUsername(), null);
+        }
     }
 
     static String getApiKey() {
