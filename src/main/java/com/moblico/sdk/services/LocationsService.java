@@ -32,7 +32,8 @@ public final class LocationsService {
         PAGE("page"),
         MERCHANT_ID("merchantId"),
         CHECKIN_ENABLED("checkInEnabled"),
-        NOTIFICATION_ENABLED("notificationEnabled");
+        NOTIFICATION_ENABLED("notificationEnabled"),
+        EXTERNAL_ID("externalId");
 
         private final String name;
 
@@ -73,7 +74,7 @@ public final class LocationsService {
      * Find locations.  To return a distance to the user, and sort the locations by distance,
      * include the context parameter.  If distance isn't important, context can be null.
      */
-    public static void findLocations(final @NonNull Context context, final Callback<List<Location>> callback) {
+    public static void findLocations(final Context context, final Callback<List<Location>> callback) {
         findLocations(context, true, new HashMap<Parameter, String>(), callback);
     }
 
