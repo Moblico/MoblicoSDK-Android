@@ -16,6 +16,22 @@ public final class AffinitiesService {
     private AffinitiesService() {
     }
 
+    public static void getAffinities(final Callback<List<Affinity>> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                HttpRequest.get("affinities", null, new ErrorForwardingCallback<String>(callback) {
+                    @Override
+                    public void onSuccess(String result) {
+                        Type collectionType = new TypeToken<List<Affinity>>() {}.getType();
+                        List<Affinity> rewards = Moblico.getGson().fromJson(result, collectionType);
+                        callback.onSuccess(rewards);
+                    }
+                });
+            }
+        });
+    }
+
     public static void getAffinitiesAtLocation(final Location location, final Callback<List<Affinity>> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override

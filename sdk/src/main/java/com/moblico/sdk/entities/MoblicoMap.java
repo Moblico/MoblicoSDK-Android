@@ -102,6 +102,10 @@ public class MoblicoMap implements Parcelable {
         }
     }
 
+    public Map<String, String> map() {
+        return mMap;
+    }
+
     @Override
     public int describeContents() {
         return 0;

@@ -6,23 +6,46 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.gson.reflect.TypeToken;
+import com.moblico.sdk.R;
 import com.moblico.sdk.entities.Location;
 import com.moblico.sdk.services.exceptions.NoLocationException;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public final class LocationsService {
+    public enum Parameter {
+        TYPE("type"),
+        ZIPCODE("zipcode"),
+        LATITUDE("latitude"),
+        LONGITUDE("longitude"),
+        RADIUS("radius"),
+        PAGE("page"),
+        MERCHANT_ID("merchantId"),
+        CHECKIN_ENABLED("checkInEnabled"),
+        NOTIFICATION_ENABLED("notificationEnabled"),
+        EXTERNAL_ID("externalId");
+
+        private final String name;
+
+        Parameter(final String name) {
+            this.name = name;
+        }
+    }
 
     private LocationsService() {
     }
@@ -32,7 +55,7 @@ public final class LocationsService {
      * include the context parameter.  If distance isn't important, context can be null.
      */
     public static void findLocations(final Context context, final boolean currentLocationRequired,
-                                     final Map<String, String> parameters, final Callback<List<Location>> callback) {
+                                     final @NonNull Map<Parameter, String> parameters, final Callback<List<Location>> callback) {
         if (context == null && currentLocationRequired) {
             callback.onFailure(new NoLocationException());
             return;
@@ -45,13 +68,11 @@ public final class LocationsService {
                 return;
             }
             if (location != null) {
-                parameters.put("latitude", Double.toString(location.getLatitude()));
-                parameters.put("longitude", Double.toString(location.getLongitude()));
-                findLocations(parameters, callback);
-                return;
+                parameters.put(Parameter.LATITUDE, Double.toString(location.getLatitude()));
+                parameters.put(Parameter.LONGITUDE, Double.toString(location.getLongitude()));
             }
         }
-        findLocations(callback);
+        findLocations(parameters, callback);
     }
 
     /**
@@ -59,30 +80,27 @@ public final class LocationsService {
      * include the context parameter.  If distance isn't important, context can be null.
      */
     public static void findLocations(final Context context, final Callback<List<Location>> callback) {
-        findLocations(context, true, new HashMap<String, String>(), callback);
+        findLocations(context, true, new HashMap<Parameter, String>(), callback);
     }
 
     public static void findLocationsByZip(final @NonNull String zipcode, final Callback<List<Location>> callback) {
-        findLocations(callback, "zipcode", zipcode);
+        HashMap<Parameter, String> parameters = new HashMap<>();
+        parameters.put(Parameter.ZIPCODE, zipcode);
+        findLocations(parameters, callback);
     }
 
-    public static void findLocations(final Callback<List<Location>> callback, final String... parameters) {
-        if ((parameters.length & 1) == 1) {
-            // The parameter length is odd, we must have an even number for key:value pairs!
-            throw new IllegalArgumentException("An even number of parameters is required");
-        }
-        Map<String, String> params = new HashMap<>();
-        for (int i = 0; i < parameters.length; i+=2) {
-            params.put(parameters[i], parameters[i+1]);
-        }
-        findLocations(params, callback);
-    }
-
-    public static void findLocations(final Map<String, String> parameters, final Callback<List<Location>> callback) {
+    public static void findLocations(final Map<Parameter, String> parameters, final Callback<List<Location>> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
-                HttpRequest.get("locations", parameters, new ErrorForwardingCallback<String>(callback) {
+                HashMap<String, String> params = null;
+                if (parameters != null) {
+                    params = new HashMap<>();
+                    for (Map.Entry<Parameter, String> entry : parameters.entrySet()) {
+                        params.put(entry.getKey().name, entry.getValue());
+                    }
+                }
+                HttpRequest.get("locations", params, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {
                         Type collectionType = new TypeToken<List<Location>>() {}.getType();
@@ -189,15 +207,13 @@ public final class LocationsService {
                 // didn't give us the permission.
                 return false;
             }
-            final Activity activity = (Activity)context;
-            if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-                ApplicationInfo applicationInfo = context.getApplicationInfo();
-                int stringId = applicationInfo.labelRes;
-                String appName = stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : context.getString(stringId);
+            final Activity activity = (Activity) context;
+            boolean background = accessesBackgroundLocation(context);
+            if (background || ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 new AlertDialog.Builder(activity)
-                        .setTitle("Location Permission Needed")
-                        .setMessage(appName + " uses your location to find relevant points of interest near you!")
+                        .setTitle(R.string.access_location_title)
+                        .setMessage(background ? R.string.access_background_location_message
+                                               : R.string.access_fine_location_message)
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -214,9 +230,31 @@ public final class LocationsService {
     }
 
     private static void requestLocationPermissions(Activity activity) {
-        ActivityCompat.requestPermissions(activity,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION},
-                0);
+        String[] permissions = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && accessesBackgroundLocation(activity)) {
+            permissions = new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            };
+        } else {
+            permissions = new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            };
+        }
+        ActivityCompat.requestPermissions(activity, permissions, 0);
+    }
+
+    private static boolean accessesBackgroundLocation(Context context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            return false;
+        }
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
+            Set<String> requestedPermissions = new HashSet<>(Arrays.asList(packageInfo.requestedPermissions));
+            return requestedPermissions.contains(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+        } catch (PackageManager.NameNotFoundException ignored) {}
+        return false;
     }
 }

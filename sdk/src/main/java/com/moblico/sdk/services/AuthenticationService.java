@@ -24,6 +24,10 @@ public final class AuthenticationService {
      * so no extra information is sent to the callback, just a call to onSuccess or onFailure.
      */
     public static void authenticate(final Callback<Void> callback) {
+        authenticate(true, callback);
+    }
+
+    public static void authenticate(final boolean retryOnFailure, final Callback<Void> callback) {
         if (Moblico.getToken() != null && Moblico.getToken().isValid()) {
             callback.onSuccess(null);
             return;
@@ -61,7 +65,7 @@ public final class AuthenticationService {
 
             @Override
             public void onFailure(Throwable caught) {
-                if (caught instanceof StatusCodeException) {
+                if (retryOnFailure && caught instanceof StatusCodeException) {
                     StatusCodeException ex = (StatusCodeException) caught;
                     if (ex.getStatus() != null &&
                             (ex.getStatus().getStatusType() == Status.StatusType.PASSWORD_MISMATCH ||
@@ -71,7 +75,7 @@ public final class AuthenticationService {
                         // because we persist the username/password, and we don't want to have all
                         // possible first startup queries to add this logic.
                         Moblico.clearUser();
-                        authenticate(callback);
+                        authenticate(false, callback);
                         return;
                     }
                 }

@@ -9,6 +9,7 @@ import java.util.Date;
 public class Promos implements Parcelable{
     private final long id;
     private final Date lastUpdateDate;
+    private String name;
     private final String caption;
     private final Image image;
     private final String clickToCall;
@@ -19,6 +20,7 @@ public class Promos implements Parcelable{
         id = in.readLong();
         long tmpLastUpdateDate = in.readLong();
         lastUpdateDate = tmpLastUpdateDate != -1 ? new Date(tmpLastUpdateDate) : null;
+        name = in.readString();
         caption = in.readString();
         image = (Image) in.readParcelable(Image.class.getClassLoader());
         clickToCall = in.readString();
@@ -35,6 +37,7 @@ public class Promos implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(id);
         dest.writeLong(lastUpdateDate != null ? lastUpdateDate.getTime() : -1L);
+        dest.writeString(name);
         dest.writeString(caption);
         dest.writeParcelable(image, 0);
         dest.writeString(clickToCall);
@@ -62,6 +65,10 @@ public class Promos implements Parcelable{
         return lastUpdateDate;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public String getCaption() {
         return caption;
     }
@@ -87,6 +94,7 @@ public class Promos implements Parcelable{
         return "Promos{" +
                 "id=" + id +
                 ", lastUpdateDate=" + lastUpdateDate +
+                ", name='" + name + '\'' +
                 ", caption='" + caption + '\'' +
                 ", image=" + image +
                 ", clickToCall='" + clickToCall + '\'' +

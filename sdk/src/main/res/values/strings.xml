@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="access_location_title">Location Permission Needed</string>
+    <string name="access_fine_location_message">This app uses your location to find relevant points of interest near you.</string>
+    <string name="access_background_location_message">This app collects location data to enable notifications, and automated Bluetooth beacon interactions even when the app is closed or not in use.\n\nThis data is also used to provide ads and messages.</string>
+</resources>
