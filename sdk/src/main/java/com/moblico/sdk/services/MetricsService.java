@@ -20,6 +20,7 @@ public final class MetricsService {
         ENTER_PAGE("Enter_Page"),
         EXIT_PAGE("Exit_Page"),
         AD_CLICK("Ad_Click"),
+        AD_ACTION("Ad_Action"),
         TRACKING("Tracking"),
         CUSTOM("Custom"),
         VIEW_PROMO("View_Promo"),
