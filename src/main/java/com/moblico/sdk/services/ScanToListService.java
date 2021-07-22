@@ -80,15 +80,8 @@ public class ScanToListService {
                         // convert photo to base64.
                         try {
                             FileInputStream photoStream = context.openFileInput(product.photoPath);
-                            //ByteArrayOutputStream stream = new ByteArrayOutputStream();
                             byte[] buffer = new byte[photoStream.available()];
                             photoStream.read(buffer);
-                            //int sizeRead;
-                            //do {
-                                //sizeRead = photoStream.read(buffer);
-                                //stream.write(buffer, 0, sizeRead);
-                            //} while (sizeRead >= 0);
-                            //byte[] imageBytes = stream.toByteArray();
                             String imageString = Base64.encodeToString(buffer, Base64.NO_WRAP);
                             jsonProduct.addProperty("imageData", imageString);
                         } catch (Exception e) {
