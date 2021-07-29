@@ -18,12 +18,14 @@ public class ScanToListService {
         public final int quantity;
         public final String note;
         public final String photoPath;
+        public final Integer maxQuantity;
 
-        public Product(String name, int quantity, String note, String photoPath) {
+        public Product(String name, int quantity, String note, String photoPath, Integer maxQuantity) {
             this.name = name;
             this.quantity = quantity;
             this.note = note;
             this.photoPath = photoPath;
+            this.maxQuantity = maxQuantity;
         }
 
         @Override
@@ -87,6 +89,12 @@ public class ScanToListService {
                         } catch (Exception e) {
                             // Just don't attach the image
                         }
+                    }
+                    if (product.maxQuantity != null) {
+                        jsonProduct.remove("quantity");
+                        jsonProduct.addProperty("baseQuantity", product.maxQuantity);
+                        jsonProduct.addProperty("inventoryQuantity", product.quantity);
+                        jsonProduct.addProperty("quantity", product.maxQuantity - product.quantity);
                     }
                     jsonProducts.add(jsonProduct);
                 }
