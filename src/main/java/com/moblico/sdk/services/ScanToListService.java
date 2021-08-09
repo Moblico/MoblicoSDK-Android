@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Base64;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.io.FileInputStream;
@@ -50,6 +51,7 @@ public class ScanToListService {
                                  final Map<String, String> customProfileFields,
                                  final Set<Product> products,
                                  final String comments,
+                                 final Map<String, String> extraFields,
                                  final Context context,
                                  final Callback<String> callback) {
 
@@ -103,6 +105,11 @@ public class ScanToListService {
                     obj.addProperty("comments", comments);
                 }
                 obj.addProperty("emailToAddress", emailAddress);
+                if (extraFields != null) {
+                    for (Map.Entry<String, String> field : extraFields.entrySet()) {
+                        obj.addProperty(field.getKey(), field.getValue());
+                    }
+                }
 
                 Map<String, String> params = new HashMap<>();
                 params.put("json", obj.toString());
