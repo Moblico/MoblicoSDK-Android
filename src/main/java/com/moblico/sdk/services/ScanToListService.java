@@ -19,13 +19,15 @@ public class ScanToListService {
         public final int quantity;
         public final String note;
         public final String photoPath;
+        public final String productId;
         public final Integer maxQuantity;
 
-        public Product(String name, int quantity, String note, String photoPath, Integer maxQuantity) {
+        public Product(String name, int quantity, String note, String photoPath, String productId, Integer maxQuantity) {
             this.name = name;
             this.quantity = quantity;
             this.note = note;
             this.photoPath = photoPath;
+            this.productId = productId;
             this.maxQuantity = maxQuantity;
         }
 
@@ -77,7 +79,12 @@ public class ScanToListService {
                 JsonArray jsonProducts = new JsonArray();
                 for (Product product : products) {
                     JsonObject jsonProduct = new JsonObject();
-                    jsonProduct.addProperty("productId", product.name);
+                    if (product.name != null) {
+                        jsonProduct.addProperty("name", product.name);
+                    }
+                    if (product.productId != null) {
+                        jsonProduct.addProperty("productId", product.productId);
+                    }
                     jsonProduct.addProperty("quantity", product.quantity);
                     jsonProduct.addProperty("note", product.note);
                     if (product.photoPath != null) {
