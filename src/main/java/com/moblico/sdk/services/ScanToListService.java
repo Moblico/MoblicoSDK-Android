@@ -33,7 +33,13 @@ public class ScanToListService {
 
         @Override
         public int hashCode() {
-            return name.hashCode();
+            if (name != null) {
+                return name.hashCode();
+            }
+            if (productId != null) {
+                return productId.hashCode();
+            }
+            return 0;
         }
 
         @Override
