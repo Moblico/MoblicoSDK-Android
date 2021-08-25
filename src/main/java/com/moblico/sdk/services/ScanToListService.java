@@ -53,6 +53,7 @@ public class ScanToListService {
                                  final Map<String, String> customProfileFields,
                                  final Set<Product> products,
                                  final String comments,
+                                 final boolean hasName,
                                  final Map<String, String> extraFields,
                                  final Context context,
                                  final Callback<String> callback) {
@@ -116,6 +117,9 @@ public class ScanToListService {
                     for (Map.Entry<String, String> field : extraFields.entrySet()) {
                         obj.addProperty(field.getKey(), field.getValue());
                     }
+                }
+                if (hasName) {
+                    obj.addProperty("name", true);
                 }
 
                 Map<String, String> params = new HashMap<>();
