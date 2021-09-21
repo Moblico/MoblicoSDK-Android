@@ -4,13 +4,12 @@ import android.content.Context;
 import android.util.Base64;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.io.FileInputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class ScanToListService {
 
@@ -57,7 +56,7 @@ public class ScanToListService {
 
     public static void SendOrder(final String emailAddress, final Map<String, String> profileFields,
                                  final Map<String, String> customProfileFields,
-                                 final Set<Product> products,
+                                 final List<Product> products,
                                  final String comments,
                                  final boolean hasName,
                                  final Map<String, String> extraFields,
