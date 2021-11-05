@@ -1,5 +1,6 @@
 package com.moblico.sdk.entities;
 
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -8,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class User implements Parcelable {
@@ -69,7 +71,13 @@ public class User implements Parcelable {
         this.phone = phone;
         this.email = email;
         this.nickName = nickName;
-        this.locale = locale;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            this.locale = Locale.getDefault(Locale.Category.DISPLAY).toLanguageTag();
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            this.locale = Locale.getDefault().toLanguageTag();
+        } else {
+            this.locale = locale;
+        }
         this.firstName = firstName;
         this.lastName = lastName;
         this.companyName = companyName;
@@ -104,7 +112,14 @@ public class User implements Parcelable {
         phone = in.readString();
         email = in.readString();
         nickName = in.readString();
-        locale = in.readString();
+        String locale = in.readString();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            this.locale = Locale.getDefault(Locale.Category.DISPLAY).toLanguageTag();
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            this.locale = Locale.getDefault().toLanguageTag();
+        } else {
+            this.locale = locale;
+        }
         firstName = in.readString();
         lastName = in.readString();
         companyName = in.readString();
