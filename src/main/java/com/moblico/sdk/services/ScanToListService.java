@@ -79,6 +79,7 @@ public class ScanToListService {
     }
 
     public static void SendOrder(final Order order,
+                                 final Long previousSentDate,
                                  final Context context,
                                  final Callback<String> callback) {
 
@@ -99,6 +100,8 @@ public class ScanToListService {
                         // We don't show order type in custom fields!  Show it in top level instead.
                         if ("Daily".contentEquals(field.getValue())) {
                             obj.addProperty("orderType", "Daily");
+                        } else if ("Monthly".contentEquals(field.getValue())) {
+                            obj.addProperty("orderType", "Monthly");
                         }
                         continue;
                     }
@@ -146,6 +149,9 @@ public class ScanToListService {
                 obj.add("products", jsonProducts);
                 if (order.comments != null && !order.comments.trim().isEmpty()) {
                     obj.addProperty("comments", order.comments);
+                }
+                if (previousSentDate != null) {
+                    obj.addProperty("previousSentDate", previousSentDate.longValue());
                 }
                 obj.addProperty("emailToAddress", order.emailAddress);
                 if (order.extraFields != null) {
