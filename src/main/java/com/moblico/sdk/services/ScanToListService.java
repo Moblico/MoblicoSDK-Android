@@ -98,9 +98,9 @@ public class ScanToListService {
                 for (Map.Entry<String, String> field : order.customProfileFields.entrySet()) {
                     if ("Order Type".contentEquals(field.getKey())) {
                         // We don't show order type in custom fields!  Show it in top level instead.
-                        if ("Daily".contentEquals(field.getValue())) {
+                        if ("Usage Order".contentEquals(field.getValue())) {
                             obj.addProperty("orderType", "Daily");
-                        } else if ("Monthly".contentEquals(field.getValue())) {
+                        } else if ("Monthly Count".contentEquals(field.getValue())) {
                             obj.addProperty("orderType", "Monthly");
                         }
                         continue;
