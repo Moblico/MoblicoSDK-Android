@@ -41,6 +41,7 @@ public class User implements Parcelable {
     private final String firstName;
     private final String lastName;
     private final String companyName;
+    private final String companyAccountNumber;
     private final String address1;
     private final String address2;
     private final String city;
@@ -61,11 +62,11 @@ public class User implements Parcelable {
     private transient Map<String, String> params = null;
 
     User(String username, String password, String phone, String email, String nickName,
-                 String locale, String firstName, String lastName, String companyName, String address1, String address2,
-                 String city, String stateOrProvince, String country, String postalCode,
-                 String dateOfBirth, String age, boolean optinEmail, boolean optinPhone,
-                 ContactPreferenceType contactPreference, GenderType gender, String locationId,
-                 Map<String, String> attributes) {
+         String locale, String firstName, String lastName, String companyName, String companyAccountNumber, String address1, String address2,
+         String city, String stateOrProvince, String country, String postalCode,
+         String dateOfBirth, String age, boolean optinEmail, boolean optinPhone,
+         ContactPreferenceType contactPreference, GenderType gender, String locationId,
+         Map<String, String> attributes) {
         this.username = username;
         this.password = password;
         this.phone = phone;
@@ -81,6 +82,7 @@ public class User implements Parcelable {
         this.firstName = firstName;
         this.lastName = lastName;
         this.companyName = companyName;
+        this.companyAccountNumber = companyAccountNumber;
         this.address1 = address1;
         this.address2 = address2;
         this.city = city;
@@ -123,6 +125,7 @@ public class User implements Parcelable {
         firstName = in.readString();
         lastName = in.readString();
         companyName = in.readString();
+        companyAccountNumber = in.readString();
         address1 = in.readString();
         address2 = in.readString();
         city = in.readString();
@@ -168,6 +171,7 @@ public class User implements Parcelable {
         dest.writeString(firstName);
         dest.writeString(lastName);
         dest.writeString(companyName);
+        dest.writeString(companyAccountNumber);
         dest.writeString(address1);
         dest.writeString(address2);
         dest.writeString(city);
@@ -247,6 +251,10 @@ public class User implements Parcelable {
         return companyName;
     }
 
+    public String getCompanyAccountNumber() {
+        return companyAccountNumber;
+    }
+
     public String getAddress1() {
         return address1;
     }
@@ -324,6 +332,7 @@ public class User implements Parcelable {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", companyName='" + companyName + '\'' +
+                ", companyAccountNumber='" + companyAccountNumber + '\'' +
                 ", address1='" + address1 + '\'' +
                 ", address2='" + address2 + '\'' +
                 ", city='" + city + '\'' +
