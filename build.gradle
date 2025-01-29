@@ -5,11 +5,11 @@ repositories {
 }
 
 android {
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 34
+        minSdkVersion 21
+        targetSdkVersion 35
     }
     buildTypes {
         release {
