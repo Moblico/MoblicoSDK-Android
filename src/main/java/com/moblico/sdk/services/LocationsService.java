@@ -246,7 +246,7 @@ public final class LocationsService {
                         })
                         .show();
             } else {
-                requestLocationPermissions(activity);
+                requestBackgroundLocationPermissions(activity);
             }
         }
         return true;
