@@ -31,6 +31,23 @@ public final class InboxMessagesService {
         });
     }
 
+    public static void getUnreadCount(final Callback<Integer> callback) {
+        AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
+            @Override
+            public void onSuccess(Void result) {
+                Map<String, String> params = new HashMap<>();
+                params.put("unreadCount", "true");
+                HttpRequest.get("users/" + Uri.encode(Moblico.getUsername()) + "/inbox", params, new ErrorForwardingCallback<String>(callback) {
+                    @Override
+                    public void onSuccess(String result) {
+                        Type collectionType = new TypeToken<UnreadCount>() {}.getType();
+                        UnreadCount inboxMessages = Moblico.getGson().fromJson(result, collectionType);
+                        callback.onSuccess(inboxMessages.unreadCount);
+                    }
+                });            }
+        });
+    }
+
     public static void markMessageRead(final long messageId, final Callback<Void> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
@@ -63,5 +80,9 @@ public final class InboxMessagesService {
                 });
             }
         });
+    }
+
+    static class UnreadCount {
+        int unreadCount;
     }
 }

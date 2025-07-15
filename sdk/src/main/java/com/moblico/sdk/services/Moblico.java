@@ -93,6 +93,7 @@ public final class Moblico {
         b.scheme("https");
         if (sTesting) {
             b.authority("moblicosandbox.com");
+            //b.authority("briefcase2go.com");
         } else {
             b.authority("moblico.net");
         }

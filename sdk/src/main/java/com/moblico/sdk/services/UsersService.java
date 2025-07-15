@@ -163,7 +163,9 @@ public class UsersService {
             @Override
             public void onSuccess(Void result) {
                 Map<String, String> params = new HashMap<>();
-                params.put("token", usersToken);
+                if (usersToken != null) {
+                    params.put("token", usersToken);
+                }
                 HttpRequest.delete("users/" + Uri.encode(username), params, new ErrorForwardingCallback<String>(callback) {
                     @Override
                     public void onSuccess(String result) {

@@ -144,13 +144,17 @@ public final class LocationsService {
     }
 
     public static void checkin(final Location location, final Context context, final Callback<Void> callback) {
+        checkin(location.getId(), location.getBeaconIdentifier(), context, callback);
+    }
+
+    public static void checkin(final long locationId, final String beaconId, final Context context, final Callback<Void> callback) {
         AuthenticationService.authenticate(new ErrorForwardingCallback<Void>(callback) {
             @Override
             public void onSuccess(Void result) {
                 Map<String, String> params = new HashMap<>();
-                params.put("locationId", Long.toString(location.getId()));
-                if (location.getBeaconIdentifier() != null && !location.getBeaconIdentifier().isEmpty()) {
-                    params.put("beaconIdentifier", location.getBeaconIdentifier());
+                params.put("locationId", Long.toString(locationId));
+                if (beaconId != null && !beaconId.isEmpty()) {
+                    params.put("beaconIdentifier", beaconId);
                 }
                 if (context != null) {
                     android.location.Location l = findLocation(context);
@@ -208,12 +212,10 @@ public final class LocationsService {
                 return false;
             }
             final Activity activity = (Activity) context;
-            boolean background = accessesBackgroundLocation(context);
-            if (background || ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 new AlertDialog.Builder(activity)
                         .setTitle(R.string.access_location_title)
-                        .setMessage(background ? R.string.access_background_location_message
-                                               : R.string.access_fine_location_message)
+                        .setMessage(R.string.access_fine_location_message)
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -225,25 +227,46 @@ public final class LocationsService {
                 requestLocationPermissions(activity);
             }
             return false;
+        } else if (accessesBackgroundLocation(context) && ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            if (!(context instanceof Activity)) {
+                return false;
+            }
+            final Activity activity = (Activity) context;
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+                new AlertDialog.Builder(activity)
+                        .setTitle(R.string.access_location_title)
+                        .setMessage(R.string.access_background_location_message)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                requestBackgroundLocationPermissions(activity);
+                            }
+                        })
+                        .show();
+            } else {
+                requestBackgroundLocationPermissions(activity);
+            }
         }
         return true;
     }
 
     private static void requestLocationPermissions(Activity activity) {
-        String[] permissions = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && accessesBackgroundLocation(activity)) {
-            permissions = new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
+        String[] permissions = new String[]{
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        };
+        ActivityCompat.requestPermissions(activity, permissions, 1);
+    }
+
+    private static void requestBackgroundLocationPermissions(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            String[] permissions = new String[]{
                     Manifest.permission.ACCESS_BACKGROUND_LOCATION
             };
-        } else {
-            permissions = new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-            };
+            ActivityCompat.requestPermissions(activity, permissions, 2);
         }
-        ActivityCompat.requestPermissions(activity, permissions, 0);
     }
 
     private static boolean accessesBackgroundLocation(Context context) {

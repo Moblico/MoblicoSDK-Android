@@ -83,6 +83,7 @@ public class Status {
         NO_CONTENT_FOUND(136),
         INVALID_CONTENT_FIELDS(137),
         NO_EVENTS_FOUND(138),
+        USER_ALREADY_SCANNED(140),
         NO_GROUPS_FOUND(141),
         INVALID_AMOUNT(142),
         NO_MERCHANT_FOUND(143),

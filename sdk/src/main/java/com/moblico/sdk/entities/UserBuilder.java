@@ -15,6 +15,7 @@ public class UserBuilder {
     private String firstName;
     private String lastName;
     private String companyName;
+    private String companyAccountNumber;
     private String address1;
     private String address2;
     private String city;
@@ -47,7 +48,8 @@ public class UserBuilder {
         locale = emptyToNull(user.getLocale());
         firstName = emptyToNull(user.getFirstName());
         lastName = emptyToNull(user.getLastName());
-        companyName= emptyToNull(user.getCompanyName());
+        companyName = emptyToNull(user.getCompanyName());
+        companyAccountNumber = emptyToNull(user.getCompanyAccountNumber());
         address1 = emptyToNull(user.getAddress1());
         address2 = emptyToNull(user.getAddress2());
         city = emptyToNull(user.getCity());
@@ -114,6 +116,11 @@ public class UserBuilder {
 
     public UserBuilder setCompanyName(String companyName) {
         this.companyName = companyName;
+        return this;
+    }
+
+    public UserBuilder setCompanyAccountNumber(String companyAccountNumber) {
+        this.companyAccountNumber = companyAccountNumber;
         return this;
     }
 
@@ -184,8 +191,8 @@ public class UserBuilder {
 
     public User build() {
         return new User(username, password, phone, email, nickName, locale, firstName, lastName, companyName,
-                address1, address2, city, stateOrProvince, country, postalCode, dateOfBirth, age, optinEmail,
-                optinPhone, contactPreference, gender, locationId, attributes);
+                companyAccountNumber, address1, address2, city, stateOrProvince, country, postalCode, dateOfBirth, age,
+                optinEmail, optinPhone, contactPreference, gender, locationId, attributes);
     }
 
     private static String emptyToNull(String input) {

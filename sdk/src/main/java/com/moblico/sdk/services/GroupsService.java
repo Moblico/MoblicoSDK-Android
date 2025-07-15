@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 
 import com.google.gson.reflect.TypeToken;
 import com.moblico.sdk.entities.Group;
-import com.moblico.sdk.entities.Location;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
