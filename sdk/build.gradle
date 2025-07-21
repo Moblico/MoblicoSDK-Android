@@ -15,6 +15,15 @@ android {
         }
     }
     namespace 'com.moblico.sdk'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()   // optional, but handy
+        }
+    }
 }
 
 dependencies {
@@ -27,11 +36,11 @@ publishing {
     publications {
         release(MavenPublication) {
             groupId = 'com.github.Moblico'
-            artifactId = 'sdk'
-            version = '1.0'
+            artifactId = 'MoblicoSDK-Android'
+            version = '1.0.1'
 
             afterEvaluate {
-                from components.findByName('release')
+                from components.release
             }
         }
     }
