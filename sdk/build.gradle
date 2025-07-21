@@ -28,7 +28,7 @@ publishing {
         release(MavenPublication) {
             groupId = 'com.github.Moblico'
             artifactId = 'sdk'
-            version = '1.0-SNAPSHOT'
+            version = '1.0'
 
             afterEvaluate {
                 from components.findByName('release')
