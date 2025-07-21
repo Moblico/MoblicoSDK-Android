@@ -27,7 +27,7 @@ publishing {
     publications {
         release(MavenPublication) {
             groupId = 'com.github.Moblico'
-            artifactId = 'MoblicoSDK-Android'
+            artifactId = 'sdk'
             version = '1.0-SNAPSHOT'
 
             afterEvaluate {
